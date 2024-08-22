@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-// import { Inter } from "next/font/google";
 import { League_Spartan } from "next/font/google";
 import "./globals.css";
 import { ProviderTheme } from "./providers";
-import Sidebar from "./components/shared/sidebar/sidebar";
+import Sidebar from "./components/shared/sidebar/Sidebar";
+import { SidebarProvider } from "./context/SidebarContext";
 
-// const inter = Inter({ subsets: ["latin"] });
 const LeagueSpartan = League_Spartan({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -24,7 +23,9 @@ export default function RootLayout({
         className={`${LeagueSpartan.className} bg-color11 dark:bg-color12 flex`}
       >
         <ProviderTheme>
-          <Sidebar>{children}</Sidebar>
+          <SidebarProvider>
+            <Sidebar>{children}</Sidebar>
+          </SidebarProvider>
         </ProviderTheme>
       </body>
     </html>

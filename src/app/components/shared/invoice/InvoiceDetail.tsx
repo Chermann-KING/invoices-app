@@ -1,10 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Invoice as InvoiceType } from "../../../types";
 import Image from "next/image";
 import arrowLeft from "../../../../../public/images/icon-arrow-left.svg";
+import InvoicePanel from "./InvoicePanel";
+import { useSidebarContext } from "../../../context/SidebarContext";
 
 interface InvoiceDetailProps {
   invoice: InvoiceType;
@@ -12,6 +14,46 @@ interface InvoiceDetailProps {
 
 const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   const router = useRouter();
+  const { setIsAsideHidden } = useSidebarContext();
+  const [isPanelOpen, setIsPanelOpen] = useState(false);
+  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceType | null>(
+    null
+  );
+  const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
+  const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
+
+  // Fonction pour gérer le clic sur "Edit"
+  const handleEditClick = (invoice: InvoiceType) => {
+    setSelectedInvoice(invoice);
+    setPanelMode("edit");
+    setIsPanelOpen(true);
+  };
+
+  // Fonction pour ouvrir la popup de suppression
+  const handleDeleteClick = () => {
+    setIsAsideHidden(true);
+    setIsDeletePopupOpen(true);
+  };
+
+  // Fonction pour fermer la popup de suppression
+  const closeDeletePopup = () => {
+    setIsAsideHidden(false);
+    setIsDeletePopupOpen(false);
+  };
+
+  // Fonction pour supprimer la facture
+  const deleteInvoice = () => {
+    // TODO: Logique de suppression
+    setIsAsideHidden(false);
+    setIsDeletePopupOpen(false);
+    router.push("/invoices");
+  };
+
+  // Fonction pour fermer le panneau
+  const closePanel = () => {
+    setIsPanelOpen(false);
+    setSelectedInvoice(null);
+  };
 
   // Définition des classes de statut en fonction du statut
   let statusClasses = "";
@@ -35,6 +77,10 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
       break;
   }
 
+  // affichage
+  const cancelButtonStyle = `px-[23.65px] py-3 bg-color04 text-[0.813rem] text-color05 font-bold rounded-3xl`;
+  const deleteButtonStyle = `px-[23.65px] py-3 bg-color09 text-white font-bold rounded-3xl`;
+
   return (
     <div className="w-full max-w-[730px] min-w-[327px] mx-auto mt-16">
       {/* Bouton Retour */}
@@ -47,20 +93,16 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
       </button>
 
       {/* Détails de la facture */}
-      <div className=" h-[743px] mx-auto flex flex-col gap-y-6 rounded-lg shadow-lg">
+      <div className="h-[743px] mx-auto flex flex-col gap-y-6 rounded-lg shadow-lg">
         {/* Header */}
         <div className="w-full h-[88px] flex justify-between items-center bg-white dark:bg-color03 rounded-lg px-8 ">
           {/* Text & Statut */}
           <div className="flex items-center gap-x-5">
-            {/* Text */}
             <span className="text-[0.813rem]">Status</span>
-            {/* Statut */}
             <div
               className={`w-[104px] h-[40px] flex justify-center items-center gap-2 rounded-md ${statusClasses}`}
             >
-              {/* Dot */}
               <div className={`w-2 h-2 rounded-full ${dotClasses}`}></div>
-              {/* Texte du statut */}
               <strong className="leading-none mb-[-3px]">
                 {invoice.status.charAt(0).toUpperCase() +
                   invoice.status.slice(1)}
@@ -70,10 +112,16 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
 
           {/* Actions */}
           <div className="flex space-x-4">
-            <button className="px-[23.65px] py-3 bg-gray-200 dark:bg-color04 dark:text-color05 font-bold rounded-3xl">
+            <button
+              className="px-[23.65px] py-3 bg-gray-200 dark:bg-color04 dark:text-color05 font-bold rounded-3xl"
+              onClick={() => handleEditClick(invoice)}
+            >
               Edit
             </button>
-            <button className="px-[23.65px] py-3 bg-red-600-200 bg-color09 text-white font-bold rounded-3xl">
+            <button
+              className={`${deleteButtonStyle}`}
+              onClick={handleDeleteClick}
+            >
               Delete
             </button>
             {invoice.status !== "paid" && (
@@ -86,11 +134,9 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
 
         {/* Details */}
         <div className="h-[631px] flex flex-col gap-y-11 bg-white dark:bg-color03 rounded-lg px-12 py-12">
-          {/* Informations de la facture */}
-          <div className="flex flex-col ">
+          <div className="flex flex-col">
             {/* top */}
             <div className="flex justify-between">
-              {/* ID & Description */}
               <div className="flex flex-col gap-y-1.5">
                 <p className="text-[0.938rem] font-bold text-color06">
                   #<span className="text-white font-medium">{invoice.id}</span>
@@ -99,7 +145,6 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
                   {invoice.description}
                 </p>
               </div>
-              {/* Adresse */}
               <div className="text-[0.813rem] font-medium text-right text-color05">
                 <p>{invoice.senderAddress.street}</p>
                 <p>{invoice.senderAddress.city}</p>
@@ -160,9 +205,7 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
 
           {/* Items et Prix */}
           <div className="h-[264px] flex flex-col">
-            {/* Items */}
-            <ul className="flex flex-col justify-center gap-y-8 h-[184px] bg-gray-100 dark:bg-color04 px-8 pt-8 pb-10 rounded-t-lg ">
-              {/*  */}
+            <ul className="flex flex-col justify-center gap-y-8 h-[184px] bg-gray-100 dark:bg-color04 px-8 pt-8 pb-10 rounded-t-lg">
               <li className="flex justify-between text-[0.813rem] dark:text-color05 leading-none">
                 <p className="flex-1 text-[0.938rem]">Item Name</p>
                 <div className="flex-1 grid grid-cols-3 gap-x-16">
@@ -171,34 +214,72 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
                   <p className="justify-self-end">Total</p>
                 </div>
               </li>
-              {/*   */}
-              {invoice.items.map((item) => (
+
+              {/* Items Map */}
+              {invoice.items.map((item, index) => (
                 <li
-                  key={item.name}
-                  className="flex justify-between text-[0.938rem] font-bold leading-none"
+                  key={index}
+                  className="flex justify-between dark:text-white font-bold text-[0.938rem] leading-none"
                 >
-                  <p className="flex-1 ">{item.name}</p>
+                  <p className="flex-1">{item.name}</p>
                   <div className="flex-1 grid grid-cols-3 gap-x-16">
                     <p className="justify-self-center text-color05">
                       {item.quantity}
                     </p>
-                    <p className="justify-self-end text-color05">
-                      £{item.price.toFixed(2)}
-                    </p>
-                    <p className="justify-self-end">£{item.total.toFixed(2)}</p>
+                    <p className="justify-self-end">{item.price}</p>
+                    <p className="justify-self-end">{item.total}</p>
                   </div>
                 </li>
               ))}
             </ul>
 
-            {/* Montant total */}
-            <div className="h-[80px] flex justify-between items-center text-right text-lg  dark:bg-color08 px-8 rounded-b-lg">
-              <p className="text-[0.813rem]">Amount Due</p>
-              <p className="text-2xl font-bold">£ {invoice.total.toFixed(2)}</p>
+            <div className="h-[80px] flex justify-between items-center px-8 bg-[#373B53] dark:bg-black rounded-b-lg">
+              <p className="text-white text-[0.813rem] leading-none">
+                Amount Due
+              </p>
+              <p className="text-white text-[1.5rem] font-bold">
+                {invoice.total}
+              </p>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Popup de confirmation de suppression */}
+      {isDeletePopupOpen && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+          <div className="w-[480px] h-[249px] bg-white dark:bg-color03 px-12 py-14 rounded-lg">
+            <h2 className="text-[1.5rem] font-bold mb-3">Confirm Deletion</h2>
+            <p className="text-[0.813rem] mb-3.5">
+              Are you sure you want to delete this invoice? This action cannot
+              be undone.
+            </p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className={`${cancelButtonStyle}`}
+                onClick={closeDeletePopup}
+              >
+                Cancel
+              </button>
+              <button
+                className={`${deleteButtonStyle}`}
+                onClick={deleteInvoice}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Panneau latéral pour l'édition */}
+      {isPanelOpen && (
+        <InvoicePanel
+          onClose={closePanel}
+          mode={panelMode}
+          invoiceData={selectedInvoice}
+        />
+      )}
     </div>
   );
 };

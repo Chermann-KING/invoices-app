@@ -23,6 +23,10 @@ const config: Config = {
         color11: "#F8F8FB", // Light Gray BG
         color12: "#141625", // Dark BG
       },
+      gridTemplateColumns: {
+        // Définition de la grille "Item List"
+        itemGrid: "1fr 54px 87px 50px 40px",
+      },
     },
   },
   plugins: [],
