@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
-import addIcon from "../../../../../public/images/icon-plus.svg";
-import deleteIcon from "../../../../../public/images/icon-delete.svg";
+import DeleteIcon from "../../../../../public/images/icon-delete.svg";
+import PlusIcon from "../../../../../public/images/icon-plus.svg";
 import { Invoice as InvoiceType } from "../../../types";
+import PaymentTerms from "./paymentTerms";
 
 interface InvoicePanelProps {
   onClose: () => void;
@@ -51,24 +51,29 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
     setItems(updatedItems);
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // TODO: Logique de soumission du formulaire
+  };
+
   // affichage
-  const inputStyle = `w-full p-2 mt-1 dark:bg-color03 border border-color04  focus:border-color01 focus:outline-none rounded-md`;
+  const inputStyle = `w-full p-2 mt-1 bg-white dark:bg-color03 text-color08 dark:text-white border border-color05 dark:border-color04 focus:border-color01 focus:outline-none caret-color01 rounded-md`;
   const placeholderStyle = {
     paddingLeft: "10px",
     fontSize: "0.938rem",
     fontWeight: "bold",
   };
-  const addButtonStyle = `w-full flex justify-center items-center gap-x-1 px-[23.65px] py-3 dark:bg-color03 text-[0.813rem] text-white font-bold rounded-3xl mt-4`;
-  const discardButtonStyle = `px-[23.65px] py-3 dark:bg-[#F9FAFE] text-[0.813rem] dark:text-color07 font-bold rounded-3xl`;
-  const cancelButtonStyle = `px-[23.65px] py-3 bg-color04 text-[0.813rem] text-color05 font-bold rounded-3xl`;
-  const draftButtonStyle = `px-[23.65px] py-3 bg-[#373B53] text-[0.813rem] text-color05 font-bold rounded-3xl`;
-  const sendButtonStyle = `px-[23.65px] py-3 dark:bg-color01 text-[0.813rem] text-white font-bold rounded-3xl`;
+  const addButtonStyle = `w-full flex justify-center items-center gap-x-1 px-[23.65px] py-3 bg-[#F9FAFE] hover:bg-color05 dark:bg-color03 text-[0.813rem] font-bold text-color07 dark:text-color05 rounded-3xl mt-4`;
+  const discardButtonStyle = `px-[23.65px] py-3 bg-[#F9FAFE] text-[0.813rem] text-color07 font-bold rounded-3xl`;
+  const cancelButtonStyle = `px-[23.65px] py-3 bg-[#F9FAFE] dark:bg-color04 text-[0.813rem] text-color07 dark:text-color05 font-bold rounded-3xl`;
+  const draftButtonStyle = `px-[23.65px] py-3 bg-[#373B53] hover:bg-color08 dark:hover:bg-color03 text-[0.813rem] text-color05 font-bold rounded-3xl`;
+  const sendButtonStyle = `px-[23.65px] py-3 bg-color01 hover:bg-color02 text-[0.813rem] text-white font-bold rounded-3xl`;
   const titleSectionStyle = `text-[0.813rem] font-bold text-color01 mb-2`;
-  const inputLabelStyle = `text-[0.813rem] font-medium text-color05`;
+  const inputLabelStyle = `text-[0.813rem] font-medium text-color07 dark:text-color05`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
-      <div className="left-20 w-full sm:w-[719px] dark:bg-color12 h-full pl-[3.6rem] py-8 pr-8 relative overflow-y-auto">
+      <div className="left-20 w-full sm:w-[719px] bg-white dark:bg-color12 h-full pl-[3.6rem] py-8 pr-8 relative overflow-y-auto scrollbar-thin scrollbar-webkit">
         {/* Titre */}
         <h2 className="text-2xl font-bold mb-4">
           {mode === "create" ? (
@@ -82,7 +87,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
         </h2>
 
         {/* Formulaire */}
-        <form>
+        <form onSubmit={handleSubmit}>
           {/* Section "Bill From" */}
           <div>
             <h3 className={`${titleSectionStyle}`}>Bill From</h3>
@@ -150,6 +155,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                   className={`${inputStyle}`}
                   style={placeholderStyle}
                   defaultValue={invoiceData?.clientEmail || ""}
+                  placeholder="e.g. email@example.com"
                 />
               </div>
               <div className="col-span-3">
@@ -200,20 +206,12 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                   type="date"
                   className={`${inputStyle}`}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.createdAt || ""}
+                  defaultValue={invoiceData?.createdAt || "21 Aug 2021"}
                 />
               </div>
-              <div>
+              <div className="flex flex-col justify-end">
                 <label className={`${inputLabelStyle}`}>Payment Terms</label>
-                <select
-                  className={`${inputStyle} appearance-none`}
-                  style={placeholderStyle}
-                  defaultValue={invoiceData?.paymentTerms || "Net 30 Days"}
-                >
-                  <option value="Net 30 Days">Net 30 Days</option>
-                  <option value="Net 60 Days">Net 60 Days</option>
-                  <option value="Net 90 Days">Net 90 Days</option>
-                </select>
+                <PaymentTerms />
               </div>
               {/* Description */}
               <div className="col-span-2">
@@ -225,6 +223,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                   className={`${inputStyle}`}
                   style={placeholderStyle}
                   defaultValue={invoiceData?.description || ""}
+                  placeholder="e.g. Graphic Design Service"
                 />
               </div>
             </div>
@@ -233,27 +232,25 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
           {/* Section "Item List" */}
           <div className="mt-6 text-white">
             <h3 className="text-sm font-bold text-[#888EB0] mb-4">Item List</h3>
-            {items.length > 0 && (
-              <div className="grid grid-cols-itemGrid gap-y-0 gap-x-4 items-center mb-2 ">
-                <label htmlFor="name" className={`${inputLabelStyle}`}>
-                  Item name
-                </label>
-                <label htmlFor="quantity" className={`${inputLabelStyle}`}>
-                  Qty.
-                </label>
-                <label htmlFor="price" className={`${inputLabelStyle}`}>
-                  Price
-                </label>
+            {/* {items.length > 0 && ( */}
+            <div className="grid grid-cols-itemGrid gap-y-0 gap-x-4 items-center mb-2 ">
+              <label htmlFor="name" className={`${inputLabelStyle}`}>
+                Item name
+              </label>
+              <label htmlFor="quantity" className={`${inputLabelStyle}`}>
+                Qty.
+              </label>
+              <label htmlFor="price" className={`${inputLabelStyle}`}>
+                Price
+              </label>
 
-                <span className={`${inputLabelStyle} text-left mr-2`}>
-                  Total
-                </span>
-              </div>
-            )}
+              <span className={`${inputLabelStyle} text-left mr-2`}>Total</span>
+            </div>
+            {/* )} */}
             {items.map((item, index) => (
               <div
                 key={index}
-                className="grid grid-cols-itemGrid gap-y-4 gap-x-4 items-center mb-2"
+                className="grid grid-cols-itemGrid gap-y-4 gap-x-4 items-center mb-2 "
               >
                 <input
                   id="name"
@@ -283,15 +280,15 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                     updateItem(index, "price", Number(e.target.value))
                   }
                 />
-                <span className="text-[0.938rem] font-bold text-color05">
+                <span className="text-[0.938rem] font-bold text-color06 dark:text-color05">
                   {item.quantity * item.price}
                 </span>
                 <button
                   type="button"
                   onClick={() => removeItem(index)}
-                  className="ml-auto"
+                  className="justify-self-end"
                 >
-                  <Image src={deleteIcon} alt="Delete" />
+                  <DeleteIcon className=" text-color06 hover:text-color09 transition-colors duration-200" />
                 </button>
               </div>
             ))}
@@ -300,7 +297,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
               onClick={addItem}
               className={`${addButtonStyle}`}
             >
-              <Image src={addIcon} alt="Add new item" />
+              <PlusIcon className=" text-color07 dark:text-color05 mt-[-3px]" />
               Add New Item
             </button>
           </div>

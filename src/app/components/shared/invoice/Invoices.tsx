@@ -9,7 +9,7 @@ interface InvoicesProps {
 
 const Invoices: React.FC<InvoicesProps> = ({ invoices }) => {
   if (invoices.length === 0) {
-    return <EmptyState />; // Afficher EmptyState si aucune facture
+    return <EmptyState />; // Si aucune facture
   }
   return (
     <div className="flex flex-col gap-4">

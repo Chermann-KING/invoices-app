@@ -3,7 +3,7 @@ import ThemeSwitch from "../../ThemeSwitch";
 import Link from "next/link";
 import Image from "next/image";
 import avatar from "../../../../../public/images/image-avatar.jpg";
-import logo from "../../../../../public/images/logo.svg";
+import Logo from "../../../../../public/images/logo.svg";
 
 const Aside = () => {
   return (
@@ -11,12 +11,12 @@ const Aside = () => {
       {/* Logo */}
       <div className="relative w-full h-[103px] flex justify-center items-center bg-color01 rounded-r-[20px] overflow-hidden">
         <Link href={"/"} aria-label="Logo" className="absolute">
-          <Image src={logo} alt="Image Avatar" width={40} height={38} />
+          <Logo />
         </Link>
         <div className="w-full h-1/2 bg-color02 self-end rounded-tl-[23px]"></div>
       </div>
       {/* *** */}
-      <div className="flex flex-col items-center gap-y-4 w-full mb-[23px]">
+      <div className="flex flex-col items-center gap-y-4 w-full mb-[23px] ">
         {/* Theme toggle */}
         <ThemeSwitch />
 

@@ -29,7 +29,41 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }: any) {
+      const newUtilities = {
+        // Scrollbar pour le mode clair
+        ".scrollbar-thin": {
+          scrollbarWidth: "thin",
+          scrollbarColor: "#DFE3FA transparent",
+        },
+        ".scrollbar-webkit": {
+          "&::-webkit-scrollbar": {
+            width: "8px",
+          },
+          "&::-webkit-scrollbar-track": {
+            background: "transparent",
+          },
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#DFE3FA",
+            borderRadius: "100px",
+          },
+        },
+
+        // Scrollbar pour le mode sombre
+        ".dark .scrollbar-thin": {
+          scrollbarColor: "#252945 transparent",
+        },
+        ".dark .scrollbar-webkit": {
+          "&::-webkit-scrollbar-thumb": {
+            backgroundColor: "#252945",
+          },
+        },
+      };
+
+      addUtilities(newUtilities, ["responsive", "hover"]);
+    },
+  ],
 };
 
 export default config;

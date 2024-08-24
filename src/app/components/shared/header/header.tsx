@@ -14,7 +14,7 @@ const Header: React.FC<HeaderProps> = ({ onFilterChange, invoiceCount }) => {
   // État pour gérer l'ouverture du panneau latéral
   const [isPanelOpen, setIsPanelOpen] = useState(false);
 
-  // Gérer les différents messages en fonction du nombre de factures
+  // Différents messages en fonction du nombre de factures
   const invoiceMessage =
     invoiceCount === 0
       ? "No invoices"
@@ -27,8 +27,12 @@ const Header: React.FC<HeaderProps> = ({ onFilterChange, invoiceCount }) => {
       <header className="h-[55px] flex justify-between items-center mb-[64px]">
         {/* titre */}
         <div className="flex flex-col gap-[6px]">
-          <h1 className="text-[2.25rem] font-bold leading-none">Invoices</h1>
-          <p className="text-[0.813rem]">{invoiceMessage}</p>
+          <h1 className="text-[2.25rem] font-bold leading-none text-color08 dark:text-white">
+            Invoices
+          </h1>
+          <p className="text-[0.813rem] text-color06 dark:text-color05">
+            {invoiceMessage}
+          </p>
         </div>
 
         {/* actions */}

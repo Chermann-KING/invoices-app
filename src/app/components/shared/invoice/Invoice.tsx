@@ -1,7 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
-import arrowRight from "../../../../../public/images/icon-arrow-right.svg";
+import ArrowRightIcon from "../../../../../public/images/icon-arrow-right.svg";
 
 interface InvoiceProps {
   id: string;
@@ -44,7 +43,7 @@ const Invoice: React.FC<InvoiceProps> = ({
     <Link
       href={`/invoices/${id}`}
       aria-label={`invoice-${id}`}
-      className="w-[730px] h-[72px] flex flex-row justify-between items-center bg-white dark:bg-color03 text-[#7E88C3] dark:text-white rounded-[8px] shadow-md pl-[32px] pr-[23px]"
+      className="w-[728px] h-[70px] flex flex-row justify-between items-center bg-white dark:bg-color03 text-[#7E88C3] dark:text-white rounded-[8px] shadow-md pl-[32px] pr-[23px] border border-transparent hover:border-color01 transition-all duration-300"
     >
       {/* ID, Date d'échéance & Nom du client */}
       <div className="flex items-center justify-start gap-x-12 mb-[-3px]">
@@ -80,7 +79,6 @@ const Invoice: React.FC<InvoiceProps> = ({
             {/* Dot */}
             <div className={`w-2 h-2 rounded-full ${dotClasses}`}></div>
             {/* Texte du statut */}
-            {/* Texte du statut */}
             <strong className="leading-none mb-[-3px]">
               {status.charAt(0).toUpperCase() + status.slice(1)}
             </strong>
@@ -88,7 +86,7 @@ const Invoice: React.FC<InvoiceProps> = ({
 
           {/* Icône */}
           <div className="w-[12px] h-[16px]">
-            <Image src={arrowRight} alt="right-arrow" width={12} height={16} />
+            <ArrowRightIcon />
           </div>
         </div>
       </div>

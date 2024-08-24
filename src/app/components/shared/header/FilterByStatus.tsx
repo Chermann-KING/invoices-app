@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
-import arrowDownIcon from "../../../../../public/images/icon-arrow-down.svg";
-import checkIcon from "../../../../../public/images/icon-check.svg";
+import ArrowDownIcon from "../../../../../public/images/icon-arrow-down.svg";
+import CheckIcon from "../../../../../public/images/icon-check.svg";
 
 type FilterStatus = "Draft" | "Pending" | "Paid";
 
@@ -30,15 +29,11 @@ const FilterByStatus: React.FC<FilterByStatusProps> = ({ onFilterChange }) => {
       {/* button to open dropdown */}
       <button
         onClick={toggleDropdown}
-        className="inline-flex justify-center items-center gap-x-4 w-full text-[0.9375rem] font-bold dark:text-white focus:outline-none"
+        className="inline-flex justify-center items-center gap-x-4 w-full text-[0.9375rem] font-bold text-color08 dark:text-white focus:outline-none"
       >
         <span>Filter by status</span>
-        <Image
-          src={arrowDownIcon}
-          width={10}
-          height={10}
-          alt="arrow down icon"
-          className={`transform transition-transform duration-200 ${
+        <ArrowDownIcon
+          className={`text-color01 transform transition-transform duration-200 ${
             isOpen ? "rotate-180" : "rotate-0"
           }`}
         />
@@ -65,15 +60,8 @@ const FilterByStatus: React.FC<FilterByStatusProps> = ({ onFilterChange }) => {
               onChange={() => handleStatusChange(status)}
               className="hidden peer"
             />
-            <div className="w-6 h-6 bg-color05 border-2 border-transparent rounded-md peer-hover:border-purple-500 peer-checked:bg-purple-500 peer-checked:border-purple-500 dark:bg-color03 flex items-center justify-center">
-              {selectedStatus === status && (
-                <Image
-                  src={checkIcon}
-                  width={12}
-                  height={12}
-                  alt="check icon"
-                />
-              )}
+            <div className="w-6 h-6 bg-color05 border border-transparent rounded-md peer-hover:border-purple-500 peer-checked:bg-purple-500 peer-checked:border-purple-500 dark:bg-color03 flex items-center justify-center">
+              {selectedStatus === status && <CheckIcon />}
             </div>
             <span className="ml-3.5">{status}</span>
           </label>
