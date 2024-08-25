@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArrowDownIcon from "../../../../../public/images/icon-arrow-down.svg";
 import CheckIcon from "../../../../../public/images/icon-check.svg";
 
@@ -11,11 +11,15 @@ interface FilterByStatusProps {
 }
 
 const FilterByStatus: React.FC<FilterByStatusProps> = ({ onFilterChange }) => {
+  // état
   const [isOpen, setIsOpen] = useState(false);
   const [selectedStatus, setSelectedStatus] = useState<FilterStatus | null>(
     null
   );
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // comportement
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleStatusChange = (status: FilterStatus) => {
@@ -24,8 +28,29 @@ const FilterByStatus: React.FC<FilterByStatusProps> = ({ onFilterChange }) => {
     setIsOpen(false); // Fermer la dropdown après sélection
   };
 
+  // Ferme la dropdown si on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // affichage
   return (
-    <div className="w-[192px] relative inline-block text-left">
+    <div
+      className="w-[192px] relative inline-block text-left"
+      ref={dropdownRef}
+    >
       {/* button to open dropdown */}
       <button
         onClick={toggleDropdown}
