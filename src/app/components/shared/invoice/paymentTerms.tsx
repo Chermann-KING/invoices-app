@@ -40,7 +40,7 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
       {/* Bouton pour ouvrir la dropdown */}
       <button
         onClick={toggleDropdown}
-        className="inline-flex justify-between items-center w-full bg-white dark:bg-color03 border border-color05 dark:border-color04 focus:border-color01 dark:focus:border-color01 focus:outline-none text-[0.938rem] font-bold dark:text-white mt-1 pl-5 pr-4 py-[8.78px] rounded-md"
+        className="inline-flex justify-between items-center w-full bg-white dark:bg-color03 border border-color05 dark:border-color04 focus:border-color01 dark:focus:border-color01 focus:outline-none text-[0.938rem] font-bold text-color08 dark:text-white mt-1 pl-5 pr-4 py-[8.78px] rounded-md"
       >
         <span>{selectedOption}</span>
         <ArrowDownIcon

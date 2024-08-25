@@ -3,6 +3,7 @@ import DeleteIcon from "../../../../../public/images/icon-delete.svg";
 import PlusIcon from "../../../../../public/images/icon-plus.svg";
 import { Invoice as InvoiceType } from "../../../types";
 import PaymentTerms from "./paymentTerms";
+import DatePicker from "../DatePicker";
 
 interface InvoicePanelProps {
   onClose: () => void;
@@ -202,11 +203,10 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className={`${inputLabelStyle}`}>Invoice Date</label>
-                <input
-                  type="date"
-                  className={`${inputStyle}`}
-                  style={placeholderStyle}
-                  defaultValue={invoiceData?.createdAt || "21 Aug 2021"}
+                <DatePicker
+                  initialDate={
+                    invoiceData ? new Date(invoiceData.createdAt) : new Date()
+                  }
                 />
               </div>
               <div className="flex flex-col justify-end">
