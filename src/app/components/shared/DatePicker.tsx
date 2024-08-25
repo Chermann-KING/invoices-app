@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import CalendarIcon from "../../../../public/images/icon-calendar.svg";
 import ArrowLeftIcon from "../../../../public/images/icon-arrow-left.svg";
 import ArrowRightIcon from "../../../../public/images/icon-arrow-right.svg";
 
 interface DatePickerProps {
-  initialDate?: Date; // Prop optionnelle pour passer une date par défaut
+  initialDate?: Date;
 }
 
 const DatePicker: React.FC<DatePickerProps> = ({ initialDate }) => {
@@ -15,6 +15,8 @@ const DatePicker: React.FC<DatePickerProps> = ({ initialDate }) => {
   const [showCalendar, setShowCalendar] = useState(false);
   const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
   const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
+
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
   const firstDayOfMonth = new Date(currentYear, currentMonth, 1).getDay();
@@ -69,9 +71,26 @@ const DatePicker: React.FC<DatePickerProps> = ({ initialDate }) => {
     }
   }, [initialDate]);
 
+  // Ferme la dropdown si on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setShowCalendar(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   // affichage
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       {/* Dropdown button */}
       <button
         onClick={() => setShowCalendar(!showCalendar)}

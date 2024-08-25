@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ArrowDownIcon from "../../../../../public/images/icon-arrow-down.svg";
 
 type PaymentTermsOptions =
@@ -14,10 +14,14 @@ interface PaymentTermsProps {
 }
 
 const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
+  // état
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setSelectedOption] =
     useState<PaymentTermsOptions>("Net 30 Days");
 
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // comportement
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleOptionChange = (
@@ -32,11 +36,29 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
     setIsOpen(false);
   };
 
-  // affichage
-  const inputStyle = `w-full p-2 mt-1 dark:bg-color03 border border-color04  focus:border-color01 focus:outline-none rounded-md`;
+  // Ferme la dropdown si on clique en dehors
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    };
 
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // affichage
   return (
-    <div className="w-full relative inline-block text-left appearance-none">
+    <div
+      className="w-full relative inline-block text-left appearance-none"
+      ref={dropdownRef}
+    >
       {/* Bouton pour ouvrir la dropdown */}
       <button
         onClick={toggleDropdown}
