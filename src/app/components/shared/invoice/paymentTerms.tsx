@@ -10,18 +10,21 @@ type PaymentTermsOptions =
   | "Net 30 Days";
 
 interface PaymentTermsProps {
-  onOptionChange?: (option: PaymentTermsOptions) => void;
+  selectedTerm?: number;
+  onOptionChange?: (option: number) => void;
 }
 
-const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
-  // état
+const PaymentTerms: React.FC<PaymentTermsProps> = ({
+  selectedTerm = 30,
+  onOptionChange,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] =
-    useState<PaymentTermsOptions>("Net 30 Days");
+  const [selectedOption, setSelectedOption] = useState<PaymentTermsOptions>(
+    convertNumberToOption(selectedTerm)
+  );
 
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // comportement
   const toggleDropdown = () => setIsOpen(!isOpen);
 
   const handleOptionChange = (
@@ -30,13 +33,13 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
   ) => {
     e.stopPropagation();
     setSelectedOption(option);
+    const numericValue = convertOptionToNumber(option);
     if (onOptionChange) {
-      onOptionChange(option);
+      onOptionChange(numericValue);
     }
     setIsOpen(false);
   };
 
-  // Ferme la dropdown si on clique en dehors
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -53,16 +56,16 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
     };
   }, []);
 
-  // affichage
   return (
     <div
       className="w-full relative inline-block text-left appearance-none"
       ref={dropdownRef}
     >
-      {/* Bouton pour ouvrir la dropdown */}
+      {/* bouton d'ouverture de la dropdown */}
       <button
+        type="button"
         onClick={toggleDropdown}
-        className="inline-flex justify-between items-center w-full bg-white dark:bg-color03 border border-color05 dark:border-color04 focus:border-color01 dark:focus:border-color01 focus:outline-none text-[0.938rem] font-bold text-color08 dark:text-white mt-1 pl-5 pr-4 py-[8.78px] rounded-md"
+        className="inline-flex justify-between items-center w-full bg-white dark:bg-color03 border border-color05 dark:border-color04 focus:border-color01 dark:focus:border-color01 focus:outline-none text-[0.938rem] font-bold text-color08 dark:text-white mt-1 pl-5 pr-4 py-2 rounded-md"
       >
         <span>{selectedOption}</span>
         <ArrowDownIcon
@@ -72,11 +75,11 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
         />
       </button>
 
-      {/* Dropdown */}
+      {/* dropdown */}
       {isOpen && (
         <div
           role="select"
-          className=" absolute right-0 w-full mt-2 rounded-lg shadow-2xl bg-white dark:bg-color04 z-10 divide-y divide-solid divide-color05 dark:divide-color03"
+          className="absolute right-0 w-full mt-2 rounded-lg shadow-2xl bg-white dark:bg-color04 z-10 divide-y divide-solid divide-color05 dark:divide-color03"
         >
           {(
             [
@@ -92,7 +95,7 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
                 selectedOption === option
                   ? "text-color02"
                   : "dark:text-color05 hover:text-color02 dark:hover:text-color02"
-              } hover:text-color02`}
+              }`}
               onClick={(e) => handleOptionChange(option, e)}
             >
               {option}
@@ -102,6 +105,38 @@ const PaymentTerms: React.FC<PaymentTermsProps> = ({ onOptionChange }) => {
       )}
     </div>
   );
+};
+
+// Fonction pour convertir un nombre en chaîne de caractères
+const convertNumberToOption = (num: number): PaymentTermsOptions => {
+  switch (num) {
+    case 1:
+      return "Net 1 Day";
+    case 7:
+      return "Net 7 Days";
+    case 14:
+      return "Net 14 Days";
+    case 30:
+      return "Net 30 Days";
+    default:
+      return "Net 30 Days";
+  }
+};
+
+// Fonction pour convertir une chaîne de caractères en nombre
+const convertOptionToNumber = (option: PaymentTermsOptions): number => {
+  switch (option) {
+    case "Net 1 Day":
+      return 1;
+    case "Net 7 Days":
+      return 7;
+    case "Net 14 Days":
+      return 14;
+    case "Net 30 Days":
+      return 30;
+    default:
+      return 30;
+  }
 };
 
 export default PaymentTerms;
