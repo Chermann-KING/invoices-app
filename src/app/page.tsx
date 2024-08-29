@@ -1,10 +1,28 @@
 "use client";
 
 import React, { useState } from "react";
-import Header from "@/app/components/shared/header/header";
+import Header from "../app/components/shared/header/Header";
 import Invoices from "./components/shared/invoice/Invoices";
-import invoicesData from "./data/invoices.json"; // Importe tes données de factures
+import invoicesData from "./data/invoices.json";
 import { Invoice as InvoiceType } from "./types";
+
+// Fonction pour normaliser le statut d'une invoice
+const normalizeInvoiceStatus = (invoiceData: any[]): InvoiceType[] => {
+  return invoiceData.map((invoice) => {
+    const normalizedStatus = ["draft", "pending", "paid"].includes(
+      invoice.status.toLowerCase()
+    )
+      ? invoice.status.toLowerCase()
+      : "draft";
+    return {
+      ...invoice,
+      status: normalizedStatus as "draft" | "pending" | "paid",
+    };
+  });
+};
+
+// Utilisation de la fonction de normalisation
+const normalizedInvoices = normalizeInvoiceStatus(invoicesData);
 
 export default function Home() {
   const [filterStatus, setFilterStatus] = useState<
@@ -16,22 +34,20 @@ export default function Home() {
     setFilterStatus(status);
   };
 
-  // Filtrer les factures en fonction du statut sélectionné
+  // Filtre les factures en fonction du statut sélectionné
   const filteredInvoices = filterStatus
-    ? invoicesData.filter(
+    ? normalizedInvoices.filter(
         (invoice: InvoiceType) => invoice.status === filterStatus.toLowerCase()
       )
-    : invoicesData;
+    : normalizedInvoices;
 
   return (
     <div className="min-h-screen pt-[65px] w-full max-w-[730px] min-w-[327px] mx-auto">
-      {/* Passer la fonction de changement de filtre et le nombre de factures filtrées à Header */}
       <Header
         onFilterChange={handleFilterChange}
         invoiceCount={filteredInvoices.length}
       />
-      <main className="">
-        {/* Passer les factures filtrées à Invoices */}
+      <main>
         <Invoices invoices={filteredInvoices} />
       </main>
     </div>

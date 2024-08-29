@@ -69,8 +69,17 @@ const DatePicker: React.FC<DatePickerProps> = ({
     }
   };
 
+  // const formatDate = (date: Date) => {
+  //   const options = { day: "2-digit", month: "short", year: "numeric" };
+  //   return date.toLocaleDateString("en-GB", options);
+  // };
+
   const formatDate = (date: Date) => {
-    const options = { day: "2-digit", month: "short", year: "numeric" };
+    const options: Intl.DateTimeFormatOptions = {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    };
     return date.toLocaleDateString("en-GB", options);
   };
 

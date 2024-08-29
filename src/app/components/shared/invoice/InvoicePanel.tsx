@@ -255,33 +255,51 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
     }));
   };
 
-  const handleSaveAndSend = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    handleSubmit("send");
-  };
+  // const handleSaveAndSend = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   handleSubmit("send");
+  // };
 
-  const handleSaveAsDraft = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    handleSubmit("draft");
-  };
+  // const handleSaveAsDraft = (e: React.MouseEvent<HTMLButtonElement>) => {
+  //   e.preventDefault();
+  //   handleSubmit("draft");
+  // };
 
-  const handleSubmit = (actionType: "draft" | "send") => {
-    // TODO: Logique de prétraitement avant la soumission
-    console.log(`Traitement de la facture en tant que ${actionType}`);
+  // const handleSubmit = (actionType: "draft" | "send") => {
+  //   // TODO: Logique de prétraitement avant la soumission
+  //   console.log(`Traitement de la facture en tant que ${actionType}`);
+
+  //   if (validateForm()) {
+  //     // Ajustement du statut en fonction du type d'action
+  //     const newStatus = actionType === "send" ? "pending" : "draft";
+  //     setFormData((prev) => ({
+  //       ...prev,
+  //       status: newStatus,
+  //     }));
+
+  //     console.log("FormData après la mise à jour du statut:", formData);
+
+  //     // TODO: Logique pour enregistrer les données ou les envoyer à un serveur
+
+  //     // S'assurer de la mise à jour de l'état après les opérations asynchrones si nécessaire
+  //   } else {
+  //     console.log("La validation du formulaire a échoué", errors);
+  //   }
+  // };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const actionType = (e.target as HTMLFormElement).getAttribute(
+      "data-action-type"
+    ) as "draft" | "send";
 
     if (validateForm()) {
-      // Ajustement du statut en fonction du type d'action
       const newStatus = actionType === "send" ? "pending" : "draft";
       setFormData((prev) => ({
         ...prev,
         status: newStatus,
       }));
-
       console.log("FormData après la mise à jour du statut:", formData);
-
-      // TODO: Logique pour enregistrer les données ou les envoyer à un serveur
-
-      // S'assurer de la mise à jour de l'état après les opérations asynchrones si nécessaire
     } else {
       console.log("La validation du formulaire a échoué", errors);
     }
@@ -321,7 +339,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
         </h2>
 
         {/* Formulaire */}
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} data-action-type="send">
           {/* Section "Bill From" */}
           <div>
             <h3 className={`${titleSectionStyle}`}>Bill From</h3>
@@ -706,9 +724,11 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
               </Button>
               <Button
                 type="submit"
+                data-action-type="send"
                 variant="primary"
                 size="large"
-                onClick={handleSaveAndSend}
+                // onClick={handleSaveAndSend}
+                // onClick={(e) => handleSubmit(e as any, "send")}
               >
                 Save Changes
               </Button>
@@ -726,18 +746,22 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
               </Button>
               <div className="flex gap-x-2">
                 <Button
-                  type="button"
+                  type="submit"
+                  data-action-type="draft"
                   variant="draft"
                   size="large"
-                  onClick={handleSaveAsDraft}
+                  // onClick={handleSaveAsDraft}
+                  // onClick={(e) => handleSubmit(e as any, "draft")}
                 >
                   Save as Draft
                 </Button>
                 <Button
                   type="submit"
+                  data-action-type="send"
                   variant="primary"
                   size="large"
-                  onClick={handleSaveAndSend}
+                  // onClick={handleSaveAndSend}
+                  // onClick={(e) => handleSubmit(e as any, "send")}
                 >
                   Save & Send
                 </Button>

@@ -16,9 +16,10 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   const router = useRouter();
   const { setIsAsideHidden } = useSidebarContext();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
-  const [selectedInvoice, setSelectedInvoice] = useState<InvoiceType | null>(
-    null
-  );
+  const [selectedInvoice, setSelectedInvoice] = useState<
+    InvoiceType | undefined
+  >(undefined);
+
   const [panelMode, setPanelMode] = useState<"create" | "edit">("create");
   const [isDeletePopupOpen, setIsDeletePopupOpen] = useState(false);
 
@@ -52,7 +53,7 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   // Fonction pour fermer le panneau
   const closePanel = () => {
     setIsPanelOpen(false);
-    setSelectedInvoice(null);
+    setSelectedInvoice(undefined);
   };
 
   // Définition des classes de statut en fonction du statut
