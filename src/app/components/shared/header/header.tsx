@@ -3,11 +3,12 @@
 import React, { useState } from "react";
 import FilterByStatus from "./FilterByStatus";
 import Button from "../button/Button";
+import PlusIcon from "../../../../../public/images/icon-plus.svg";
 import InvoicePanel from "../invoice/InvoicePanel";
 
 interface HeaderProps {
   onFilterChange: (status: "Draft" | "Pending" | "Paid") => void;
-  invoiceCount: number; // Ajouter une prop pour le nombre de factures filtrées
+  invoiceCount: number;
 }
 
 const Header: React.FC<HeaderProps> = ({ onFilterChange, invoiceCount }) => {
@@ -38,7 +39,17 @@ const Header: React.FC<HeaderProps> = ({ onFilterChange, invoiceCount }) => {
         {/* actions */}
         <div className="w-[370px] flex justify-between items-center">
           <FilterByStatus onFilterChange={onFilterChange} />
-          <Button onClick={() => setIsPanelOpen(true)} />
+          <Button
+            type="button"
+            variant="primary"
+            className="gap-x-4"
+            onClick={() => setIsPanelOpen(true)}
+          >
+            <span className="text-color01 w-[32px] h-[32px] rounded-full bg-white flex justify-center items-center">
+              <PlusIcon className=" text-color01 mr-[-2px] mt-[2px]" />
+            </span>
+            <span className="pr-2">New Invoice</span>
+          </Button>
         </div>
       </header>
 

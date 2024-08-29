@@ -6,6 +6,7 @@ import { Invoice as InvoiceType } from "../../../types";
 import ArrowBackIcon from "../../../../../public/images/icon-arrow-left.svg";
 import InvoicePanel from "./InvoicePanel";
 import { useSidebarContext } from "../../../context/SidebarContext";
+import Button from "../button/Button";
 
 interface InvoiceDetailProps {
   invoice: InvoiceType;
@@ -115,20 +116,25 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
 
           {/* Actions */}
           <div className="flex space-x-4 ">
-            <button
+            <Button
               className={`${editButtonStyle}`}
+              variant="secondary"
+              size="large"
               onClick={() => handleEditClick(invoice)}
             >
               Edit
-            </button>
-            <button
-              className={`${deleteButtonStyle}`}
-              onClick={handleDeleteClick}
-            >
+            </Button>
+            <Button variant="danger" size="large" onClick={handleDeleteClick}>
               Delete
-            </button>
+            </Button>
             {invoice.status !== "paid" && (
-              <button className={`${paidButtonStyle}`}>Mark as Paid</button>
+              <Button
+                variant="primary"
+                size="large"
+                onClick={() => alert("Ivoice as Paid")}
+              >
+                Mark as Paid
+              </Button>
             )}
           </div>
         </div>
@@ -269,18 +275,12 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
               be undone.
             </p>
             <div className="flex justify-end space-x-4">
-              <button
-                className={`${cancelButtonStyle}`}
-                onClick={closeDeletePopup}
-              >
+              <Button variant="cancel" size="large" onClick={closeDeletePopup}>
                 Cancel
-              </button>
-              <button
-                className={`${deleteButtonStyle}`}
-                onClick={deleteInvoice}
-              >
+              </Button>
+              <Button size="large" variant="danger" onClick={deleteInvoice}>
                 Delete
-              </button>
+              </Button>
             </div>
           </div>
         </div>

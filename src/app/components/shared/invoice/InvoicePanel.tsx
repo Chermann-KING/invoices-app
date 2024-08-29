@@ -4,12 +4,30 @@ import PlusIcon from "../../../../../public/images/icon-plus.svg";
 import { Invoice as InvoiceType } from "../../../types";
 import PaymentTerms from "./paymentTerms";
 import DatePicker from "../DatePicker";
+import { Invoice } from "../../../types";
+import Button from "../button/Button";
 
 interface InvoicePanelProps {
   onClose: () => void;
   mode: "create" | "edit";
   invoiceData?: InvoiceType;
 }
+
+// LabeledInput
+const InputLabel = ({ label, error }: any) => {
+  const labelStyle = `text-[0.813rem] font-medium ${
+    error ? "text-color09" : "text-gray-500 dark:text-color05"
+  }`;
+
+  const errorStyle = "text-color09 text-[0.625rem] font-semibold";
+
+  return (
+    <div className="flex justify-between items-center">
+      <label className={`${labelStyle}`}>{label}</label>
+      {error && <span className={errorStyle}>{error}</span>}
+    </div>
+  );
+};
 
 const InvoicePanel: React.FC<InvoicePanelProps> = ({
   onClose,
@@ -18,7 +36,47 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
 }) => {
   // état
   const [items, setItems] = useState(invoiceData?.items || []);
-  const [formData, setFormData] = useState(invoiceData || {});
+
+  // Calcul de la date d'échéance en fonction de la date de création et des termes de paiement
+  const calculatePaymentDue = (
+    createdAt: string,
+    paymentTerms: number
+  ): string => {
+    const creationDate = new Date(createdAt);
+    creationDate.setDate(creationDate.getDate() + paymentTerms);
+    return creationDate.toISOString().split("T")[0];
+  };
+
+  const [formData, setFormData] = useState<Invoice>(
+    invoiceData || {
+      id: "",
+      createdAt: new Date().toISOString().split("T")[0],
+      paymentDue: calculatePaymentDue(
+        new Date().toISOString().split("T")[0],
+        30
+      ),
+      description: "",
+      paymentTerms: 30,
+      clientName: "",
+      clientEmail: "",
+      status: "draft",
+      senderAddress: {
+        street: "",
+        city: "",
+        postCode: "",
+        country: "",
+      },
+      clientAddress: {
+        street: "",
+        city: "",
+        postCode: "",
+        country: "",
+      },
+      items: [],
+      total: 0,
+    }
+  );
+  const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // comportement
   useEffect(() => {
@@ -29,8 +87,26 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
     }
   }, [invoiceData]);
 
+  useEffect(() => {
+    if (!invoiceData) {
+      // Seulement en mode `create`
+      setFormData((prev) => ({
+        ...prev,
+        paymentDue: calculatePaymentDue(prev.createdAt, prev.paymentTerms),
+      }));
+    }
+  }, [invoiceData, formData.createdAt, formData.paymentTerms]);
+
+  const calculateTotal = (items: any[]) => {
+    return items.reduce(
+      (acc: number, item: { price: number; quantity: number }) =>
+        acc + item.price * item.quantity,
+      0
+    );
+  };
+
   const addItem = () => {
-    setItems([
+    const newItems = [
       ...items,
       {
         name: "",
@@ -38,39 +114,196 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
         price: 0,
         total: 0,
       },
-    ]);
+    ];
+    setItems(newItems);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      items: newItems,
+      total: calculateTotal(newItems),
+    }));
   };
 
   const updateItem = (index: number, key: string, value: string | number) => {
     const updatedItems = [...items];
     updatedItems[index] = { ...updatedItems[index], [key]: value };
+
+    // Assuming you need to recalculate total if key is 'quantity' or 'price'
+    if (key === "quantity" || key === "price") {
+      updatedItems[index].total =
+        updatedItems[index].price * updatedItems[index].quantity;
+    }
+
     setItems(updatedItems);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      items: updatedItems,
+      total: calculateTotal(updatedItems),
+    }));
   };
 
   const removeItem = (index: number) => {
     const updatedItems = items.filter((_, i) => i !== index);
     setItems(updatedItems);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      items: updatedItems,
+      total: calculateTotal(updatedItems),
+    }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const validateForm = () => {
+    const newErrors: { [key: string]: string } = {};
+    let hasEmptyFields = false;
+
+    if (!formData.senderAddress?.street) {
+      newErrors.senderAddressStreet = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.senderAddress?.city) {
+      newErrors.senderAddressCity = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.senderAddress?.postCode) {
+      newErrors.senderAddressPostCode = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.senderAddress?.country) {
+      newErrors.senderAddressCountry = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.clientName) {
+      newErrors.clientName = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.clientEmail) {
+      newErrors.clientEmail = "can't be empty";
+      hasEmptyFields = true;
+    } else if (!/\S+@\S+\.\S+/.test(formData.clientEmail)) {
+      newErrors.clientEmail = "email is invalid";
+    }
+    if (!formData.clientAddress?.street) {
+      newErrors.clientAddressStreet = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.clientAddress?.city) {
+      newErrors.clientAddressCity = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.clientAddress?.postCode) {
+      newErrors.clientAddressPostCode = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.clientAddress?.country) {
+      newErrors.clientAddressCountry = "can't be empty";
+      hasEmptyFields = true;
+    }
+    if (!formData.description) {
+      newErrors.description = "can't be empty";
+      hasEmptyFields = true;
+    }
+    // Validate items
+    if (items.length === 0) {
+      newErrors.items = "- An item must be added";
+    } else {
+      items.forEach((item, index) => {
+        if (!item.name) {
+          newErrors[`itemName${index}`] = "can't be empty";
+          hasEmptyFields = true;
+        }
+        if (item.quantity <= 0) {
+          newErrors[`itemQuantity${index}`] =
+            "Quantity must be greater than zero";
+          hasEmptyFields = true;
+        }
+        if (item.price <= 0) {
+          newErrors[`itemPrice${index}`] = "Price must be greater than zero";
+          hasEmptyFields = true;
+        }
+        item.total = item.quantity * item.price; // Calcul du total pour chaque item
+      });
+    }
+
+    // For debugging
+    console.log("Validation errors: ", newErrors);
+
+    // Erreur globale
+    if (hasEmptyFields) {
+      newErrors.formData = "- All fields must be added";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleDateChange = (date: Date) => {
+    console.log("Date received from DatePicker: ", date);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      createdAt: date.toISOString().split("T")[0],
+      paymentDue: calculatePaymentDue(
+        date.toISOString().split("T")[0],
+        prevFormData.paymentTerms
+      ),
+    }));
+  };
+
+  const handlePaymentTermsChange = (newTerms: number) => {
+    setFormData((prev) => ({
+      ...prev,
+      paymentTerms: newTerms,
+      paymentDue: calculatePaymentDue(prev.createdAt, newTerms),
+    }));
+  };
+
+  const handleSaveAndSend = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    // TODO: Logique de soumission du formulaire
+    handleSubmit("send");
   };
 
-  // affichage
-  const inputStyle = `w-full p-2 mt-1 bg-white dark:bg-color03 text-color08 dark:text-white border border-color05 dark:border-color04 focus:border-color01 focus:outline-none caret-color01 rounded-md`;
+  const handleSaveAsDraft = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    handleSubmit("draft");
+  };
+
+  const handleSubmit = (actionType: "draft" | "send") => {
+    // TODO: Logique de prétraitement avant la soumission
+    console.log(`Traitement de la facture en tant que ${actionType}`);
+
+    if (validateForm()) {
+      // Ajustement du statut en fonction du type d'action
+      const newStatus = actionType === "send" ? "pending" : "draft";
+      setFormData((prev) => ({
+        ...prev,
+        status: newStatus,
+      }));
+
+      console.log("FormData après la mise à jour du statut:", formData);
+
+      // TODO: Logique pour enregistrer les données ou les envoyer à un serveur
+
+      // S'assurer de la mise à jour de l'état après les opérations asynchrones si nécessaire
+    } else {
+      console.log("La validation du formulaire a échoué", errors);
+    }
+  };
+
+  const inputStyleWithError = (errorKey: string) => `
+    w-full p-2 mt-1 bg-white dark:bg-color03 text-color08 dark:text-white 
+    border ${
+      errors[errorKey] ? "border-red-500" : "border-color05 dark:border-color04"
+    } 
+    focus:border-color01 focus:outline-none caret-color01 rounded-md
+  `;
+  const inputStyle = `
+    w-full p-2 mt-1 bg-white dark:bg-color03 text-color08 dark:text-white border-color05 dark:border-color04 
+    focus:border-color01 focus:outline-none caret-color01 rounded-md
+  `;
   const placeholderStyle = {
     paddingLeft: "10px",
     fontSize: "0.938rem",
     fontWeight: "bold",
   };
-  const addButtonStyle = `w-full flex justify-center items-center gap-x-1 px-[23.65px] py-3 bg-[#F9FAFE] hover:bg-color05 dark:bg-color03 text-[0.813rem] font-bold text-color07 dark:text-color05 rounded-3xl mt-4`;
-  const discardButtonStyle = `px-[23.65px] py-3 bg-[#F9FAFE] text-[0.813rem] text-color07 font-bold rounded-3xl`;
-  const cancelButtonStyle = `px-[23.65px] py-3 bg-[#F9FAFE] dark:bg-color04 text-[0.813rem] text-color07 dark:text-color05 font-bold rounded-3xl`;
-  const draftButtonStyle = `px-[23.65px] py-3 bg-[#373B53] hover:bg-color08 dark:hover:bg-color03 text-[0.813rem] text-color05 font-bold rounded-3xl`;
-  const sendButtonStyle = `px-[23.65px] py-3 bg-color01 hover:bg-color02 text-[0.813rem] text-white font-bold rounded-3xl`;
   const titleSectionStyle = `text-[0.813rem] font-bold text-color01 mb-2`;
-  const inputLabelStyle = `text-[0.813rem] font-medium text-color07 dark:text-color05`;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
@@ -93,40 +326,89 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
           <div>
             <h3 className={`${titleSectionStyle}`}>Bill From</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* street */}
               <div className="col-span-3">
-                <label className={`${inputLabelStyle}`}>Street Address</label>
+                <InputLabel
+                  label="Street Address"
+                  error={errors.senderAddressStreet}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("senderAddressStreet")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.senderAddress.street || ""}
+                  value={formData.senderAddress.street}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      senderAddress: {
+                        ...formData.senderAddress,
+                        street: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
+              {/* city */}
               <div>
-                <label className={`${inputLabelStyle}`}>City</label>
+                <InputLabel label="City" error={errors.senderAddressCity} />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("senderAddressCity")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.senderAddress.city || ""}
+                  value={formData.senderAddress.city}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      senderAddress: {
+                        ...formData.senderAddress,
+                        city: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
+              {/* post code */}
               <div>
-                <label className={`${inputLabelStyle}`}>Post Code</label>
+                <InputLabel
+                  label="Post Code"
+                  error={errors.senderAddressPostCode}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("senderAddressPostCode")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.senderAddress.postCode || ""}
+                  value={formData.senderAddress.postCode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      senderAddress: {
+                        ...formData.senderAddress,
+                        postCode: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
+              {/* contry */}
               <div>
-                <label className={`${inputLabelStyle}`}>Country</label>
+                <InputLabel
+                  label="Country"
+                  error={errors.senderAddressCountry}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("senderAddressCountry")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.senderAddress.country || ""}
+                  value={formData.senderAddress.country}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      senderAddress: {
+                        ...formData.senderAddress,
+                        country: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
             </div>
@@ -136,63 +418,122 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
           <div className="mt-6">
             <h3 className={`${titleSectionStyle}`}>Bill To</h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              {/* client's name */}
               <div className="col-span-3">
-                <label className={`${inputLabelStyle}`}>
-                  Client&apos;s Name
-                </label>
+                <InputLabel label="Client's Name" error={errors.clientName} />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("clientName")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.clientName || ""}
+                  value={formData.clientName}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientName: e.target.value,
+                    })
+                  }
                 />
               </div>
+              {/* client's email */}
               <div className="col-span-3">
-                <label className={`${inputLabelStyle}`}>
-                  Client&apos;s Email
-                </label>
+                <InputLabel label="Client's Email" error={errors.clientEmail} />
                 <input
                   type="email"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("clientEmail")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.clientEmail || ""}
+                  value={formData.clientEmail}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientEmail: e.target.value,
+                    })
+                  }
                   placeholder="e.g. email@example.com"
                 />
               </div>
+              {/* street adress */}
               <div className="col-span-3">
-                <label className={`${inputLabelStyle}`}>Street Address</label>
+                <InputLabel
+                  label="Street Adress"
+                  error={errors.clientAddressStreet}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("clientAddressStreet")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.clientAddress.street || ""}
+                  value={formData.clientAddress.street}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientAddress: {
+                        ...formData.clientAddress,
+                        street: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
+              {/* city */}
               <div>
-                <label className={`${inputLabelStyle}`}>City</label>
+                <InputLabel label="City" error={errors.clientAddressCity} />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("clientAddressCity")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.clientAddress.city || ""}
+                  value={formData.clientAddress.city}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientAddress: {
+                        ...formData.clientAddress,
+                        city: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
+              {/* post code */}
               <div>
-                <label className={`${inputLabelStyle}`}>Post Code</label>
+                <InputLabel
+                  label="Post Code"
+                  error={errors.clientAddressPostCode}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("clientAddressPostCode")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.clientAddress.postCode || ""}
+                  value={formData.clientAddress.postCode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientAddress: {
+                        ...formData.clientAddress,
+                        postCode: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
+              {/* country */}
               <div>
-                <label className={`${inputLabelStyle}`}>Country</label>
+                <InputLabel
+                  label="Country"
+                  error={errors.clientAddressCountry}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("clientAddressCountry")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.clientAddress.country || ""}
+                  value={formData.clientAddress.country}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      clientAddress: {
+                        ...formData.clientAddress,
+                        country: e.target.value,
+                      },
+                    })
+                  }
                 />
               </div>
             </div>
@@ -201,28 +542,49 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
           {/* Section "Invoice Details" */}
           <div className="mt-12">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className={`${inputLabelStyle}`}>Invoice Date</label>
-                <DatePicker
-                  initialDate={
-                    invoiceData ? new Date(invoiceData.createdAt) : new Date()
-                  }
-                />
-              </div>
-              <div className="flex flex-col justify-end">
-                <label className={`${inputLabelStyle}`}>Payment Terms</label>
-                <PaymentTerms />
+              <div className="col-span-2 grid grid-cols-2 gap-4">
+                {/* Invoice date */}
+                <div>
+                  <label
+                    className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                  >
+                    Invoice Date
+                  </label>
+                  <DatePicker
+                    initialDate={new Date(formData.createdAt)}
+                    onDateChange={handleDateChange}
+                  />
+                </div>
+                {/* Payement terms */}
+                <div>
+                  <label
+                    className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                  >
+                    Payment Terms
+                  </label>
+                  <PaymentTerms
+                    selectedTerm={formData.paymentTerms}
+                    onOptionChange={handlePaymentTermsChange}
+                  />
+                </div>
               </div>
               {/* Description */}
               <div className="col-span-2">
-                <label className={`${inputLabelStyle}`}>
-                  Project Description
-                </label>
+                <InputLabel
+                  label="Project Description"
+                  error={errors.description}
+                />
                 <input
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("description")}
                   style={placeholderStyle}
-                  defaultValue={invoiceData?.description || ""}
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      description: e.target.value,
+                    })
+                  }
                   placeholder="e.g. Graphic Design Service"
                 />
               </div>
@@ -234,17 +596,30 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
             <h3 className="text-sm font-bold text-[#888EB0] mb-4">Item List</h3>
             {/* {items.length > 0 && ( */}
             <div className="grid grid-cols-itemGrid gap-y-0 gap-x-4 items-center mb-2 ">
-              <label htmlFor="name" className={`${inputLabelStyle}`}>
+              <label
+                htmlFor="name"
+                className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+              >
                 Item name
               </label>
-              <label htmlFor="quantity" className={`${inputLabelStyle}`}>
+              <label
+                htmlFor="quantity"
+                className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+              >
                 Qty.
               </label>
-              <label htmlFor="price" className={`${inputLabelStyle}`}>
+              <label
+                htmlFor="price"
+                className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+              >
                 Price
               </label>
 
-              <span className={`${inputLabelStyle} text-left mr-2`}>Total</span>
+              <span
+                className={`text-[0.813rem] font-medium text-left text-gray-500 dark:text-color05`}
+              >
+                Total
+              </span>
             </div>
             {/* )} */}
             {items.map((item, index) => (
@@ -255,7 +630,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                 <input
                   id="name"
                   type="text"
-                  className={`${inputStyle}`}
+                  className={inputStyleWithError("items")}
                   style={placeholderStyle}
                   value={item.name}
                   onChange={(e) => updateItem(index, "name", e.target.value)}
@@ -275,13 +650,13 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                   type="number"
                   className={`${inputStyle}`}
                   style={placeholderStyle}
-                  value={item.price}
+                  value={item.price.toFixed(2)}
                   onChange={(e) =>
                     updateItem(index, "price", Number(e.target.value))
                   }
                 />
                 <span className="text-[0.938rem] font-bold text-color06 dark:text-color05">
-                  {item.quantity * item.price}
+                  {(item.quantity * item.price).toFixed(2)}
                 </span>
                 <button
                   type="button"
@@ -292,51 +667,80 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                 </button>
               </div>
             ))}
-            <button
+            <Button
               type="button"
+              variant="secondary"
+              size="large"
+              className={`w-full justify-center gap-x-1 mt-4`}
               onClick={addItem}
-              className={`${addButtonStyle}`}
             >
               <PlusIcon className=" text-color07 dark:text-color05 mt-[-3px]" />
-              Add New Item
-            </button>
+              <span>Add New Item</span>
+            </Button>
+          </div>
+
+          {/* Global errors */}
+          <div className="flex flex-col mt-8">
+            {errors.formData && (
+              <span className="text-[0.625rem] font-semibold text-color09">
+                {errors.formData}
+              </span>
+            )}
+            {errors.items && (
+              <span className="text-[0.625rem] font-semibold text-color09">
+                {errors.items}
+              </span>
+            )}
           </div>
 
           {/* Buttons */}
           {mode === "edit" && (
             <div className="w-full flex justify-end gap-2 mt-6">
-              <button
+              <Button
                 type="button"
-                onClick={onClose}
-                className={`${cancelButtonStyle}`}
+                variant="cancel"
+                size="large"
+                onClick={() => onClose()}
               >
                 Cancel
-              </button>
-              <button type="submit" className={`${sendButtonStyle}`}>
+              </Button>
+              <Button
+                type="submit"
+                variant="primary"
+                size="large"
+                onClick={handleSaveAndSend}
+              >
                 Save Changes
-              </button>
+              </Button>
             </div>
           )}
           {mode === "create" && (
-            <div className="w-full flex justify-between gap-2 mt-6">
-              <button
+            <div className="w-full flex justify-between mt-6">
+              <Button
                 type="button"
-                onClick={onClose}
-                className={`${discardButtonStyle}`}
+                variant="discard"
+                size="large"
+                onClick={() => onClose()}
               >
                 Discard
-              </button>
-              <div>
-                <button
-                  type="submit"
-                  onClick={onClose}
-                  className={`${draftButtonStyle} mr-2`}
+              </Button>
+              <div className="flex gap-x-2">
+                <Button
+                  type="button"
+                  variant="draft"
+                  size="large"
+                  onClick={handleSaveAsDraft}
                 >
                   Save as Draft
-                </button>
-                <button type="submit" className={`${sendButtonStyle}`}>
-                  Save Changes
-                </button>
+                </Button>
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="large"
+                  onClick={handleSaveAndSend}
+                >
+                  Save & Send
+                </Button>
               </div>
             </div>
           )}

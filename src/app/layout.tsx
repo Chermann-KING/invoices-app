@@ -1,3 +1,5 @@
+import Head from "next/head";
+import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { League_Spartan } from "next/font/google";
 import "./globals.css";
@@ -15,10 +17,13 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <Head>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
       <body
         className={`${LeagueSpartan.className} bg-color11 dark:bg-color12 flex`}
       >
