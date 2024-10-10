@@ -43,7 +43,7 @@ const Invoice: React.FC<InvoiceProps> = ({
     <Link
       href={`/invoices/${id}`}
       aria-label={`invoice-${id}`}
-      className="w-[728px] h-[70px] flex flex-row justify-between items-center bg-white dark:bg-color03 text-[#7E88C3] dark:text-white rounded-[8px] shadow-md pl-[32px] pr-[23px] border border-transparent hover:border-color01 transition-all duration-300"
+      className="w-[327px] sm:w-[672px] lg:w-[728px] h-[70px] flex flex-row justify-between items-center bg-white dark:bg-color03 text-[#7E88C3] dark:text-white rounded-[8px] shadow-md pl-[32px] pr-[23px] border border-transparent hover:border-color01 transition-all duration-300"
     >
       {/* ID, Date d'échéance & Nom du client */}
       <div className="flex items-center justify-start gap-x-12 mb-[-3px]">
