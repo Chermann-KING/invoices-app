@@ -1,7 +1,7 @@
 import React from "react";
 import Invoice from "./Invoice";
 import { Invoice as InvoiceType } from "../../../types";
-import EmptyState from "./NoInvoice";
+import NoInvoice from "./NoInvoice";
 
 interface InvoicesProps {
   invoices: InvoiceType[];
@@ -9,8 +9,9 @@ interface InvoicesProps {
 
 const Invoices: React.FC<InvoicesProps> = ({ invoices }) => {
   if (invoices.length === 0) {
-    return <EmptyState />; // Si aucune facture
+    return <NoInvoice />;
   }
+
   return (
     <div className="flex flex-col gap-4">
       {invoices.map((invoice) => (

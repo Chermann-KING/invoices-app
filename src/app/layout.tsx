@@ -1,14 +1,10 @@
-import Head from "next/head";
-import { ReactNode } from "react";
 import type { Metadata } from "next";
 import { League_Spartan } from "next/font/google";
 import "./globals.css";
-import { ProviderTheme } from "./providers";
-import Sidebar from "./components/shared/sidebar/Sidebar";
-import { SidebarProvider } from "./context/SidebarContext";
+import Sidebar from "@/app/components/Sidebar";
+import { ProviderTheme } from "@/app/providers";
 
 const LeagueSpartan = League_Spartan({ subsets: ["latin"] });
-
 export const metadata: Metadata = {
   title: "Invoice App",
   description: "The invoicing app project",
@@ -17,20 +13,20 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: ReactNode;
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <Head>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
       <body
-        className={`${LeagueSpartan.className} bg-color11 dark:bg-color12 flex`}
+        className={`${LeagueSpartan.className} bg-color11 dark:bg-color12 h-screen flex flex-col md:flex-row`}
       >
         <ProviderTheme>
-          <SidebarProvider>
-            <Sidebar>{children}</Sidebar>
-          </SidebarProvider>
+          {/* LEFT or TOP */}
+          <Sidebar />
+          {/* RIGHT or BOTTOM */}
+          <div className="w-full overflow-y-scroll flex flex-col items-center px-4 py-6 md:px-10 md:py-8">
+            <div className="max-w-[1060px] pb-12 sm:pb-0">{children}</div>
+          </div>
         </ProviderTheme>
       </body>
     </html>

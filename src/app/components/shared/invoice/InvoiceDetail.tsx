@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Invoice as InvoiceType } from "../../../types";
 import ArrowBackIcon from "../../../../../public/images/icon-arrow-left.svg";
 import InvoicePanel from "./InvoicePanel";
-import { useSidebarContext } from "../../../context/SidebarContext";
+// import { useSidebarContext } from "../../../context/SidebarContext";
 import Button from "../button/Button";
 
 interface InvoiceDetailProps {
@@ -14,7 +14,7 @@ interface InvoiceDetailProps {
 
 const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   const router = useRouter();
-  const { setIsAsideHidden } = useSidebarContext();
+  // const { setIsAsideHidden } = useSidebarContext();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<
     InvoiceType | undefined
@@ -32,20 +32,20 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
 
   // Fonction pour ouvrir la popup de suppression
   const handleDeleteClick = () => {
-    setIsAsideHidden(true);
+    // setIsAsideHidden(true);
     setIsDeletePopupOpen(true);
   };
 
   // Fonction pour fermer la popup de suppression
   const closeDeletePopup = () => {
-    setIsAsideHidden(false);
+    // setIsAsideHidden(false);
     setIsDeletePopupOpen(false);
   };
 
   // Fonction pour supprimer la facture
   const deleteInvoice = () => {
     // TODO: Logique de suppression
-    setIsAsideHidden(false);
+    // setIsAsideHidden(false);
     setIsDeletePopupOpen(false);
     router.push("/invoices");
   };
@@ -79,10 +79,8 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   }
 
   // affichage
-  const cancelButtonStyle = `px-[23.65px] py-3 bg-[#F9FAFE] dark:bg-color04 text-[0.813rem] text-color07 dark:text-color05 font-bold rounded-3xl`;
   const editButtonStyle = `px-[23.65px] py-3 bg-[#F9FAFE] hover:bg-color05 dark:bg-color04 dark:hover:bg-white text-color07 dark:text-color05 dark:hover:text-color07 font-bold rounded-3xl`;
-  const deleteButtonStyle = `px-[23.65px] py-3 bg-color09 hover:bg-color10 text-white font-bold rounded-3xl`;
-  const paidButtonStyle = `px-[23.65px] py-3 bg-color01 hover:bg-color02 text-white font-bold rounded-3xl`;
+  // const paidButtonStyle = `px-[23.65px] py-3 bg-color01 hover:bg-color02 text-white font-bold rounded-3xl`;
 
   return (
     <div className="w-full max-w-[730px] min-w-[327px] mx-auto mt-16">

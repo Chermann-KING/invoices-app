@@ -10,7 +10,7 @@ interface InvoicePageProps {
 }
 
 // Fonction d'aide pour vérifier si un statut est valide
-function isValidStatus(status: any): status is InvoiceType["status"] {
+function isValidStatus(status: string): status is InvoiceType["status"] {
   return ["draft", "pending", "paid"].includes(status);
 }
 

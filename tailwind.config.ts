@@ -23,47 +23,18 @@ const config: Config = {
         color11: "#F8F8FB", // Light Gray BG
         color12: "#141625", // Dark BG
       },
+      borderRadius: {
+        "custom-rtb": " 0px 20px 20px 0px", // Coin supéreiru et inférieur droit
+        "custom-blr": "0px 0px 20px 20px", // Coin inférieur gauche droit
+        "custom-none": "0px 0px 0px 0px", // 4 Coins
+      },
       gridTemplateColumns: {
         // Définition de la grille "Item List"
         itemGrid: "1fr 54px 87px 50px 40px",
       },
     },
   },
-  plugins: [
-    function ({ addUtilities }: any) {
-      const newUtilities = {
-        // Scrollbar pour le mode clair
-        ".scrollbar-thin": {
-          scrollbarWidth: "thin",
-          scrollbarColor: "#DFE3FA transparent",
-        },
-        ".scrollbar-webkit": {
-          "&::-webkit-scrollbar": {
-            width: "8px",
-          },
-          "&::-webkit-scrollbar-track": {
-            background: "transparent",
-          },
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#DFE3FA",
-            borderRadius: "100px",
-          },
-        },
-
-        // Scrollbar pour le mode sombre
-        ".dark .scrollbar-thin": {
-          scrollbarColor: "#252945 transparent",
-        },
-        ".dark .scrollbar-webkit": {
-          "&::-webkit-scrollbar-thumb": {
-            backgroundColor: "#252945",
-          },
-        },
-      };
-
-      addUtilities(newUtilities, ["responsive", "hover"]);
-    },
-  ],
+  plugins: [],
 };
 
 export default config;

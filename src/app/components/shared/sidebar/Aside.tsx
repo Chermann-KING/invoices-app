@@ -7,7 +7,7 @@ import Logo from "../../../../../public/images/logo.svg";
 
 const Aside = () => {
   return (
-    <aside className="z-[100] w-[103px] h-screen flex flex-col justify-between items-center bg-[#373B53] dark:bg-color03 rounded-r-[20px]">
+    <aside className="z-[100] w-[103px] h-screen flex flex-col justify-between items-center bg-[#373B53] dark:bg-color03 rounded-r-[20px] ">
       {/* Logo */}
       <div className="relative w-full h-[103px] flex justify-center items-center bg-color01 rounded-r-[20px] overflow-hidden">
         <Link href={"/"} aria-label="Logo" className="absolute">

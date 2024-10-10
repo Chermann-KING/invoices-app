@@ -14,7 +14,12 @@ interface InvoicePanelProps {
 }
 
 // LabeledInput
-const InputLabel = ({ label, error }: any) => {
+interface InputLabelProps {
+  label: string;
+  error?: string;
+}
+
+const InputLabel: React.FC<InputLabelProps> = ({ label, error }) => {
   const labelStyle = `text-[0.813rem] font-medium ${
     error ? "text-color09" : "text-gray-500 dark:text-color05"
   }`;
@@ -36,6 +41,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
 }) => {
   // état
   const [items, setItems] = useState(invoiceData?.items || []);
+  const [isVisible, setIsVisible] = useState(true);
 
   // Calcul de la date d'échéance en fonction de la date de création et des termes de paiement
   const calculatePaymentDue = (
@@ -97,7 +103,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
     }
   }, [invoiceData, formData.createdAt, formData.paymentTerms]);
 
-  const calculateTotal = (items: any[]) => {
+  const calculateTotal = (items: { price: number; quantity: number }[]) => {
     return items.reduce(
       (acc: number, item: { price: number; quantity: number }) =>
         acc + item.price * item.quantity,
@@ -255,38 +261,6 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
     }));
   };
 
-  // const handleSaveAndSend = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   handleSubmit("send");
-  // };
-
-  // const handleSaveAsDraft = (e: React.MouseEvent<HTMLButtonElement>) => {
-  //   e.preventDefault();
-  //   handleSubmit("draft");
-  // };
-
-  // const handleSubmit = (actionType: "draft" | "send") => {
-  //   // TODO: Logique de prétraitement avant la soumission
-  //   console.log(`Traitement de la facture en tant que ${actionType}`);
-
-  //   if (validateForm()) {
-  //     // Ajustement du statut en fonction du type d'action
-  //     const newStatus = actionType === "send" ? "pending" : "draft";
-  //     setFormData((prev) => ({
-  //       ...prev,
-  //       status: newStatus,
-  //     }));
-
-  //     console.log("FormData après la mise à jour du statut:", formData);
-
-  //     // TODO: Logique pour enregistrer les données ou les envoyer à un serveur
-
-  //     // S'assurer de la mise à jour de l'état après les opérations asynchrones si nécessaire
-  //   } else {
-  //     console.log("La validation du formulaire a échoué", errors);
-  //   }
-  // };
-
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const actionType = (e.target as HTMLFormElement).getAttribute(
@@ -312,6 +286,14 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
     } 
     focus:border-color01 focus:outline-none caret-color01 rounded-md
   `;
+
+  const handleClose = () => {
+    setIsVisible(false); // Déclenche l'animation de fermeture
+    setTimeout(() => {
+      onClose(); // Ferme le panneau après l'animation
+    }, 500); // Assurez-vous que la durée correspond à celle de slide-out
+  };
+
   const inputStyle = `
     w-full p-2 mt-1 bg-white dark:bg-color03 text-color08 dark:text-white border-color05 dark:border-color04 
     focus:border-color01 focus:outline-none caret-color01 rounded-md
@@ -325,7 +307,10 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
-      <div className="left-20 w-full sm:w-[719px] bg-white dark:bg-color12 h-full pl-[3.6rem] py-8 pr-8 relative overflow-y-auto scrollbar-thin scrollbar-webkit">
+      <div
+        className={`left-20 w-full sm:w-[719px] bg-white dark:bg-color12 h-full pl-[3.6rem] py-8 pr-8 relative overflow-y-auto scrollbar-thin scrollbar-webkit 
+        ${isVisible ? "slide-in" : "slide-out"}`}
+      >
         {/* Titre */}
         <h2 className="text-2xl font-bold mb-4">
           {mode === "create" ? (
@@ -718,7 +703,8 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                 type="button"
                 variant="cancel"
                 size="large"
-                onClick={() => onClose()}
+                // onClick={() => onClose()}
+                onClick={handleClose}
               >
                 Cancel
               </Button>
@@ -740,7 +726,8 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                 type="button"
                 variant="discard"
                 size="large"
-                onClick={() => onClose()}
+                // onClick={() => onClose()}
+                onClick={handleClose}
               >
                 Discard
               </Button>
