@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import { Invoice as InvoiceType } from "../../../types";
 import ArrowBackIcon from "../../../../../public/images/icon-arrow-left.svg";
 import InvoicePanel from "./InvoicePanel";
-// import { useSidebarContext } from "../../../context/SidebarContext";
 import Button from "../button/Button";
 
 interface InvoiceDetailProps {
@@ -14,7 +13,6 @@ interface InvoiceDetailProps {
 
 const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   const router = useRouter();
-  // const { setIsAsideHidden } = useSidebarContext();
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<
     InvoiceType | undefined
@@ -115,22 +113,32 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
 
           {/* Actions */}
           <div className="flex space-x-4 ">
-            <Button
-              className={`${editButtonStyle}`}
-              variant="secondary"
-              size="large"
-              onClick={() => handleEditClick(invoice)}
-            >
-              Edit
-            </Button>
-            <Button variant="danger" size="large" onClick={handleDeleteClick}>
-              Delete
-            </Button>
+            {/* Affiche les boutons Edit et Delete uniquement si la facture n'est pas payée */}
+            {invoice.status !== "paid" && (
+              <div className="flex space-x-4">
+                <Button
+                  className={`${editButtonStyle}`}
+                  variant="secondary"
+                  size="large"
+                  onClick={() => handleEditClick(invoice)}
+                >
+                  Edit
+                </Button>
+                <Button
+                  variant="danger"
+                  size="large"
+                  onClick={handleDeleteClick}
+                >
+                  Delete
+                </Button>
+              </div>
+            )}
+            {/* Affiche les boutons Mark as Paid uniquement si la facture n'est pas payée */}
             {invoice.status !== "paid" && (
               <Button
                 variant="primary"
                 size="large"
-                onClick={() => alert("Ivoice as Paid")}
+                onClick={() => alert("Invoice marked as Paid")}
               >
                 Mark as Paid
               </Button>
