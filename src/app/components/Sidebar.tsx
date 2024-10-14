@@ -6,7 +6,7 @@ import ThemeSwitch from "./ThemeSwitch";
 import Image from "next/image";
 const Sidebar = () => {
   return (
-    <aside className="z-[100] w-full md:w-[103px] h-[80px] md:h-screen flex flex-row md:flex-col justify-between items-center bg-[#373B53] dark:bg-color03   rounded-custom-blr md:rounded-custom-rtb ">
+    <aside className="z-[100] w-full md:w-[103px] h-[80px] md:h-screen flex flex-row md:flex-col justify-between items-center bg-[#373B53] dark:bg-color03 rounded-custom-blr md:rounded-custom-rtb">
       {/* Logo */}
       <div className="relative w-[103px] md:w-full h-full md:h-[109px] flex justify-center items-center bg-color01  rounded-custom-blr md:rounded-custom-rtb overflow-hidden">
         <Link href={"/"} aria-label="Logo" className="absolute">

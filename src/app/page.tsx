@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Header from "@/app/components/shared/header/header";
-import Invoices from "@/app/components/shared/invoice/Invoices";
+import Invoices from "@/app/invoices/page";
 import invoicesData from "@/app/data/invoices.json";
 import { Invoice as InvoiceType } from "@/app/types";
 
@@ -42,7 +42,7 @@ export default function Home() {
     : normalizedInvoices;
 
   return (
-    <div className="min-h-screen pt-[65px] w-full max-w-[730px] min-w-[327px] mx-auto">
+    <div className="min-h-screen w-full max-w-[730px] min-w-[327px] mx-auto">
       <Header
         onFilterChange={handleFilterChange}
         invoiceCount={filteredInvoices.length}

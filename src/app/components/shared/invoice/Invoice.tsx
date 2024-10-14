@@ -43,10 +43,10 @@ const Invoice: React.FC<InvoiceProps> = ({
     <Link
       href={`/invoices/${id}`}
       aria-label={`invoice-${id}`}
-      className="w-[327px] sm:w-[672px] lg:w-[728px] h-[70px] flex flex-row justify-between items-center bg-white dark:bg-color03 text-[#7E88C3] dark:text-white rounded-[8px] shadow-md pl-[32px] pr-[23px] border border-transparent hover:border-color01 transition-all duration-300"
+      className="w-full sm:w-[672px] lg:w-[728px] sm:h-[70px] flex flex-col gap-y-6 sm:flex-row justify-between items-center bg-white dark:bg-color03 text-[#7E88C3] dark:text-white rounded-[8px] shadow-md p-6 sm:pl-[32px] sm:pr-[23px] border border-transparent hover:border-color01 transition-all duration-300"
     >
-      {/* ID, Date d'échéance & Nom du client */}
-      <div className="flex items-center justify-start gap-x-12 mb-[-3px]">
+      {/* Large devices: ID, Date d'échéance & Nom du client */}
+      <div className="hidden sm:flex items-center justify-start gap-x-12 mb-[-3px]">
         {/* ID & Date d'échéance */}
         <div className="flex items-center justify-start gap-x-11">
           {/* ID */}
@@ -61,8 +61,18 @@ const Invoice: React.FC<InvoiceProps> = ({
         <span>{clientName}</span>
       </div>
 
-      {/* Montant total, Statut & Icône */}
-      <div className="flex items-center gap-x-10">
+      {/* Mobile: ID & Nom du client */}
+      <div className="self-stretch flex sm:hidden justify-between">
+        {/* ID */}
+        <span className="text-color07">
+          #<strong className="text-[#0C0E16] dark:text-white">{id}</strong>
+        </span>
+        {/* Nom du client */}
+        <span>{clientName}</span>
+      </div>
+
+      {/* Large devices: Montant total, Statut & Icône */}
+      <div className="hidden sm:flex items-center gap-x-10">
         {/* Montant total */}
         <span className="mb-[-3px]">
           <strong className="text-[#0C0E16] dark:text-white text-right">
@@ -88,6 +98,31 @@ const Invoice: React.FC<InvoiceProps> = ({
           <div className="w-[12px] h-[16px]">
             <ArrowRightIcon />
           </div>
+        </div>
+      </div>
+
+      {/* Mobile: Date, Montal Total & Status */}
+      <div className="self-stretch flex sm:hidden justify-between">
+        <div className="flex flex-col gap-3">
+          {/* Date d'échéance */}
+          <span className="dark:text-color05 ">Due {paymentDue}</span>
+          {/* Montant total */}
+          <span className="mb-[-5px]">
+            <strong className="text-[#0C0E16] dark:text-white text-right">
+              £ {total?.toFixed(2) || "0.00"}
+            </strong>
+          </span>
+        </div>
+        {/* Statut */}
+        <div
+          className={`self-center w-[104px] h-[40px] flex justify-center items-center gap-2 rounded-md ${statusClasses}`}
+        >
+          {/* Dot */}
+          <div className={`w-2 h-2 rounded-full ${dotClasses}`}></div>
+          {/* Texte du statut */}
+          <strong className="leading-none mb-[-3px]">
+            {status.charAt(0).toUpperCase() + status.slice(1)}
+          </strong>
         </div>
       </div>
     </Link>

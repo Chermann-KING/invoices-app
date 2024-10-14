@@ -1,7 +1,7 @@
 import React from "react";
-import Invoice from "./Invoice";
-import { Invoice as InvoiceType } from "../../../types";
-import NoInvoice from "./NoInvoice";
+import Invoice from "../components/shared/invoice/Invoice";
+import { Invoice as InvoiceType } from "../types";
+import NoInvoice from "../components/shared/invoice/NoInvoice";
 
 interface InvoicesProps {
   invoices: InvoiceType[];

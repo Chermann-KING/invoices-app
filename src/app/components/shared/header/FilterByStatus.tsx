@@ -48,15 +48,17 @@ const FilterByStatus: React.FC<FilterByStatusProps> = ({ onFilterChange }) => {
   // affichage
   return (
     <div
-      className="w-[192px] relative inline-block text-left"
+      className="w-auto sm:w-[192px] relative inline-block text-left"
       ref={dropdownRef}
     >
       {/* button to open dropdown */}
       <button
         onClick={toggleDropdown}
-        className="inline-flex justify-center items-center gap-x-4 w-full text-[0.9375rem] font-bold text-color08 dark:text-white focus:outline-none"
+        className="inline-flex justify-center items-center gap-x-4 w-auto sm:w-full text-[0.9375rem] font-bold text-color08 dark:text-white focus:outline-none"
       >
-        <span>Filter by status</span>
+        {/* Conditional text for mobile and desktop */}
+        <span className="sm:hidden">Filter</span>
+        <span className="hidden sm:inline">Filter by status</span>
         <ArrowDownIcon
           className={`text-color01 transform transition-transform duration-200 ${
             isOpen ? "rotate-180" : "rotate-0"
