@@ -81,18 +81,18 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
   // const paidButtonStyle = `px-[23.65px] py-3 bg-color01 hover:bg-color02 text-white font-bold rounded-3xl`;
 
   return (
-    <div className="w-full max-w-[730px] min-w-[327px] mx-auto mt-16">
+    <div className="w-full max-w-[730px] min-w-[327px] mx-auto">
       {/* Bouton Retour */}
       <button
         onClick={() => router.back()}
-        className="w-[80px] h-[15px] flex items-center justify-between text-color07 dark:text-white dark:hover:text-color06 mb-8"
+        className="w-[80px] h-[15px] flex items-center justify-between text-color07 dark:text-white dark:hover:text-color06 my-8 md:mt-12 md:mb-8 lg:mt-16"
       >
         <ArrowBackIcon />
         <span className="leading-none font-bold mb-[-4px]">Go back</span>
       </button>
 
       {/* Détails de la facture */}
-      <div className="h-[743px] mx-auto flex flex-col gap-y-6 rounded-lg">
+      <div className="h-[743px] mx-auto flex flex-col gap-y-6 rounded-lg border border-red-500">
         {/* Header */}
         <div className="w-full h-[88px] flex justify-between items-center bg-white dark:bg-color03 rounded-lg px-8 shadow-md">
           {/* Text & Statut */}
