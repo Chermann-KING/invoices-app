@@ -13,7 +13,7 @@ const Invoices: React.FC<InvoicesProps> = ({ invoices }) => {
   }
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 pb-12 md:pb-0">
       {invoices.map((invoice) => (
         <Invoice
           key={invoice.id}
