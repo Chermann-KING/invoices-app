@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import CalendarIcon from "../../../../public/images/icon-calendar.svg";
 import ArrowLeftIcon from "../../../../public/images/icon-arrow-left.svg";
-import ArrowRightIcon from "../../../../public/images/icon-arrow-right.svg";
+import ArrowRightIcon from "../../../../public/images/icon-arrow-right.png";
+import Image from "next/image";
 
 interface DatePickerProps {
   initialDate?: Date;
@@ -139,7 +140,8 @@ const DatePicker: React.FC<DatePickerProps> = ({
               })}
             </span>
             <button type="button" onClick={handleNextMonth}>
-              <ArrowRightIcon />
+              {/* <ArrowRightIcon /> */}
+              <Image src={ArrowRightIcon} width={20} height={20} alt="Arrow Right Icon"/>
             </button>
           </div>
           {/* Days box*/}

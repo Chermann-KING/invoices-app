@@ -1,6 +1,6 @@
 import React from "react";
 import Image from "next/image";
-import illustrationEmpty from "../../../../../public/images/illustration-empty.svg";
+import illustrationEmpty from "../../../../../public/images/illustration-empty.png";
 
 const NoInvoice = () => {
   return (

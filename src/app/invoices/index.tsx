@@ -4,17 +4,17 @@ import { Invoice as InvoiceType } from "../types";
 import NoInvoice from "../components/shared/invoice/NoInvoice";
 
 interface InvoicesProps {
-  invoices: InvoiceType[];
+  invoices?: InvoiceType[];
 }
 
-const Invoices: React.FC<InvoicesProps> = ({ invoices }) => {
-  if (invoices.length === 0) {
+const Invoices: React.FC<InvoicesProps> = ({ invoices = [] }) => {
+  if (!invoices || invoices.length === 0) {
     return <NoInvoice />;
   }
 
   return (
     <div className="flex flex-col gap-4 pb-12 md:pb-0">
-      {invoices.map((invoice) => (
+      {invoices?.map((invoice) => (
         <Invoice
           key={invoice.id}
           id={invoice.id}

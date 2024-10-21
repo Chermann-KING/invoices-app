@@ -1,11 +1,12 @@
 import React from "react";
 import Link from "next/link";
-import ArrowRightIcon from "../../../../../public/images/icon-arrow-right.svg";
+import ArrowRightIcon from "../../../../../public/images/icon-arrow-right.png";
+import Image from "next/image";
 
 interface InvoiceProps {
-  id: string;
-  paymentDue: string;
-  clientName: string;
+  id: string | undefined;
+  paymentDue: string | undefined;
+  clientName: string | undefined;
   total?: number;
   status: "draft" | "pending" | "paid";
 }
@@ -96,7 +97,13 @@ const Invoice: React.FC<InvoiceProps> = ({
 
           {/* Icône */}
           <div className="w-[12px] h-[16px]">
-            <ArrowRightIcon />
+            {/* <ArrowRightIcon /> */}
+            <Image
+              src={ArrowRightIcon}
+              width={20}
+              height={20}
+              alt="Arrow Right Icon"
+            />
           </div>
         </div>
       </div>

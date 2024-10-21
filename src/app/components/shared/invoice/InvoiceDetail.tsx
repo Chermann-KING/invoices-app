@@ -162,10 +162,10 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
                   </p>
                 </div>
                 <div className="text-[0.813rem] font-medium text-left text-color07 dark:text-color05">
-                  <p>{invoice.senderAddress.street}</p>
-                  <p>{invoice.senderAddress.city}</p>
-                  <p>{invoice.senderAddress.postCode}</p>
-                  <p>{invoice.senderAddress.country}</p>
+                  <p>{invoice?.senderAddress?.street}</p>
+                  <p>{invoice?.senderAddress?.city}</p>
+                  <p>{invoice?.senderAddress?.postCode}</p>
+                  <p>{invoice?.senderAddress?.country}</p>
                 </div>
               </div>
 
@@ -202,10 +202,10 @@ const InvoiceDetail: React.FC<InvoiceDetailProps> = ({ invoice }) => {
                       </p>
                     </div>
                     <div className="text-[0.813rem] font-medium text-left text-color07 dark:text-color05">
-                      <p>{invoice.clientAddress.street}</p>
-                      <p>{invoice.clientAddress.city}</p>
-                      <p>{invoice.clientAddress.postCode}</p>
-                      <p>{invoice.clientAddress.country}</p>
+                      <p>{invoice?.clientAddress?.street}</p>
+                      <p>{invoice?.clientAddress?.city}</p>
+                      <p>{invoice?.clientAddress?.postCode}</p>
+                      <p>{invoice?.clientAddress?.country}</p>
                     </div>
                   </div>
                 </div>
