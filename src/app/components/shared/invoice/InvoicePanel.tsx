@@ -343,10 +343,10 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
       >
         <div
           className={`h-full overflow-y-auto scrollbar-thin scrollbar-webkit
-          ${screenSize === "mobile" ? "px-6 pt-24" : ""}
-          ${screenSize === "tablet" ? "px-6 pt-28 pb-6" : ""}
-          ${screenSize === "desktop" ? "pl-9 pr-6 pt-12 pb-6" : ""}
-        `}
+            ${screenSize === "mobile" ? "px-6 pt-24 pb-[88px]" : ""}
+            ${screenSize === "tablet" ? "px-6 pt-28 pb-6" : ""}
+            ${screenSize === "desktop" ? "pl-9 pr-6 pt-12 pb-6" : ""}
+          `}
         >
           {/* Go back button - Only on mobile */}
           {screenSize === "mobile" && (
@@ -749,49 +749,70 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
             </div>
 
             {/* Buttons */}
-            {mode === "edit" && (
-              <div className="w-full flex justify-end gap-2 mt-6">
-                <Button
-                  type="button"
-                  variant="cancel"
-                  size="large"
-                  onClick={handleClose}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" data-action-type="send" variant="primary">
-                  Save Changes
-                </Button>
-              </div>
-            )}
-            {mode === "create" && (
-              <div className="w-full flex justify-between mt-6">
-                <Button
-                  type="button"
-                  variant="discard"
-                  size="large"
-                  onClick={handleClose}
-                >
-                  Discard
-                </Button>
-                <div className="flex gap-x-2">
+            <div
+              className={`
+              ${
+                screenSize === "mobile"
+                  ? "fixed bottom-0 left-0 w-full bg-white dark:bg-color12 py-5 px-6 shadow-[0_-20px_25px_-5px_rgba(0,0,0,0.1)]"
+                  : "w-full mt-6"
+              }
+              ${
+                mode === "edit"
+                  ? "flex justify-end gap-2"
+                  : "flex justify-between"
+              }
+            `}
+            >
+              {mode === "edit" ? (
+                <>
                   <Button
-                    type="submit"
-                    data-action-type="draft"
-                    variant="draft"
+                    type="button"
+                    variant="cancel"
+                    size="large"
+                    onClick={handleClose}
                   >
-                    Save as Draft
+                    Cancel
                   </Button>
                   <Button
                     type="submit"
                     data-action-type="send"
                     variant="primary"
+                    size="large"
                   >
-                    Save & Send
+                    Save Changes
                   </Button>
-                </div>
-              </div>
-            )}
+                </>
+              ) : (
+                <>
+                  <Button
+                    type="button"
+                    variant="discard"
+                    size="large"
+                    onClick={handleClose}
+                  >
+                    Discard
+                  </Button>
+                  <div className="flex gap-x-2">
+                    <Button
+                      type="submit"
+                      data-action-type="draft"
+                      variant="draft"
+                      size="large"
+                    >
+                      Save as Draft
+                    </Button>
+                    <Button
+                      type="submit"
+                      data-action-type="send"
+                      variant="primary"
+                      size="large"
+                    >
+                      Save & Send
+                    </Button>
+                  </div>
+                </>
+              )}
+            </div>
           </form>
         </div>
       </div>
