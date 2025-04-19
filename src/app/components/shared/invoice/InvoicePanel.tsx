@@ -42,6 +42,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
   // état
   const [items, setItems] = useState(invoiceData?.items || []);
   const [isVisible, setIsVisible] = useState(true);
+  const [screenSize, setScreenSize] = useState("desktop");
 
   // Calcul de la date d'échéance en fonction de la date de création et des termes de paiement
   const calculatePaymentDue = (
@@ -85,6 +86,24 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
   // comportement
+  // Mise à jour de l'état de la taille de l'écran
+  // et de la classe CSS en fonction de la taille de l'écran
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 640) {
+        setScreenSize("mobile");
+      } else if (window.innerWidth <= 768) {
+        setScreenSize("tablet");
+      } else {
+        setScreenSize("desktop");
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+    handleResize(); // Contrôle initial
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   useEffect(() => {
     // Mise à jour des items si invoiceData change
     if (invoiceData) {
@@ -288,10 +307,10 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
   `;
 
   const handleClose = () => {
-    setIsVisible(false); // Déclenche l'animation de fermeture
+    setIsVisible(false);
     setTimeout(() => {
-      onClose(); // Ferme le panneau après l'animation
-    }, 500); // Assurez-vous que la durée correspond à celle de slide-out
+      onClose();
+    }, 300);
   };
 
   const inputStyle = `
@@ -306,456 +325,475 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
   const titleSectionStyle = `text-[0.813rem] font-bold text-color01 mb-2`;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex">
+    <div className="fixed inset-0 z-50">
+      {/* Overlay */}
       <div
-        className={`left-20 w-full sm:w-[719px] bg-white dark:bg-color12 h-full pl-[3.6rem] py-8 pr-8 relative overflow-y-auto scrollbar-thin scrollbar-webkit 
-        ${isVisible ? "slide-in" : "slide-out"}`}
+        className={`absolute inset-0 bg-black transition-opacity duration-300 ${
+          isVisible ? "bg-opacity-50" : "bg-opacity-0"
+        }`}
+      />
+
+      {/* Form Panel */}
+      <div
+        className={`absolute h-full bg-white dark:bg-color12
+          ${screenSize === "mobile" ? "w-full top-0 left-0" : "w-[616px]"}
+          ${screenSize === "desktop" ? "left-[83px] w-[719px]" : "left-0"}
+          ${isVisible ? "slide-in" : "slide-out"}
+        `}
       >
-        {/* Titre */}
-        <h2 className="text-2xl font-bold mb-4">
-          {mode === "create" ? (
-            "New Invoice"
-          ) : (
-            <>
-              Edit <span className="text-color06">#</span>
-              {invoiceData?.id}
-            </>
-          )}
-        </h2>
-
-        {/* Formulaire */}
-        <form onSubmit={handleSubmit} data-action-type="send">
-          {/* Section "Bill From" */}
-          <div>
-            <h3 className={`${titleSectionStyle}`}>Bill From</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* street */}
-              <div className="col-span-3">
-                <InputLabel
-                  label="Street Address"
-                  error={errors.senderAddressStreet}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("senderAddressStreet")}
-                  style={placeholderStyle}
-                  value={formData.senderAddress.street}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      senderAddress: {
-                        ...formData.senderAddress,
-                        street: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-              {/* city */}
-              <div>
-                <InputLabel label="City" error={errors.senderAddressCity} />
-                <input
-                  type="text"
-                  className={inputStyleWithError("senderAddressCity")}
-                  style={placeholderStyle}
-                  value={formData.senderAddress.city}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      senderAddress: {
-                        ...formData.senderAddress,
-                        city: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-              {/* post code */}
-              <div>
-                <InputLabel
-                  label="Post Code"
-                  error={errors.senderAddressPostCode}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("senderAddressPostCode")}
-                  style={placeholderStyle}
-                  value={formData.senderAddress.postCode}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      senderAddress: {
-                        ...formData.senderAddress,
-                        postCode: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-              {/* contry */}
-              <div>
-                <InputLabel
-                  label="Country"
-                  error={errors.senderAddressCountry}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("senderAddressCountry")}
-                  style={placeholderStyle}
-                  value={formData.senderAddress.country}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      senderAddress: {
-                        ...formData.senderAddress,
-                        country: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section "Bill To" */}
-          <div className="mt-6">
-            <h3 className={`${titleSectionStyle}`}>Bill To</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {/* client's name */}
-              <div className="col-span-3">
-                <InputLabel label="Client's Name" error={errors.clientName} />
-                <input
-                  type="text"
-                  className={inputStyleWithError("clientName")}
-                  style={placeholderStyle}
-                  value={formData.clientName}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      clientName: e.target.value,
-                    })
-                  }
-                />
-              </div>
-              {/* client's email */}
-              <div className="col-span-3">
-                <InputLabel label="Client's Email" error={errors.clientEmail} />
-                <input
-                  type="email"
-                  className={inputStyleWithError("clientEmail")}
-                  style={placeholderStyle}
-                  value={formData.clientEmail}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      clientEmail: e.target.value,
-                    })
-                  }
-                  placeholder="e.g. email@example.com"
-                />
-              </div>
-              {/* street adress */}
-              <div className="col-span-3">
-                <InputLabel
-                  label="Street Adress"
-                  error={errors.clientAddressStreet}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("clientAddressStreet")}
-                  style={placeholderStyle}
-                  value={formData.clientAddress.street}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      clientAddress: {
-                        ...formData.clientAddress,
-                        street: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-              {/* city */}
-              <div>
-                <InputLabel label="City" error={errors.clientAddressCity} />
-                <input
-                  type="text"
-                  className={inputStyleWithError("clientAddressCity")}
-                  style={placeholderStyle}
-                  value={formData.clientAddress.city}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      clientAddress: {
-                        ...formData.clientAddress,
-                        city: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-              {/* post code */}
-              <div>
-                <InputLabel
-                  label="Post Code"
-                  error={errors.clientAddressPostCode}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("clientAddressPostCode")}
-                  style={placeholderStyle}
-                  value={formData.clientAddress.postCode}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      clientAddress: {
-                        ...formData.clientAddress,
-                        postCode: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-              {/* country */}
-              <div>
-                <InputLabel
-                  label="Country"
-                  error={errors.clientAddressCountry}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("clientAddressCountry")}
-                  style={placeholderStyle}
-                  value={formData.clientAddress.country}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      clientAddress: {
-                        ...formData.clientAddress,
-                        country: e.target.value,
-                      },
-                    })
-                  }
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section "Invoice Details" */}
-          <div className="mt-12">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="col-span-2 grid grid-cols-2 gap-4">
-                {/* Invoice date */}
-                <div>
-                  <label
-                    className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
-                  >
-                    Invoice Date
-                  </label>
-                  <DatePicker
-                    initialDate={new Date(formData.createdAt)}
-                    onDateChange={handleDateChange}
-                  />
-                </div>
-                {/* Payement terms */}
-                <div>
-                  <label
-                    className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
-                  >
-                    Payment Terms
-                  </label>
-                  <PaymentTerms
-                    selectedTerm={formData.paymentTerms}
-                    onOptionChange={handlePaymentTermsChange}
-                  />
-                </div>
-              </div>
-              {/* Description */}
-              <div className="col-span-2">
-                <InputLabel
-                  label="Project Description"
-                  error={errors.description}
-                />
-                <input
-                  type="text"
-                  className={inputStyleWithError("description")}
-                  style={placeholderStyle}
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({
-                      ...formData,
-                      description: e.target.value,
-                    })
-                  }
-                  placeholder="e.g. Graphic Design Service"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Section "Item List" */}
-          <div className="mt-6 text-white">
-            <h3 className="text-sm font-bold text-[#888EB0] mb-4">Item List</h3>
-            {/* {items.length > 0 && ( */}
-            <div className="grid grid-cols-itemGrid gap-y-0 gap-x-4 items-center mb-2 ">
-              <label
-                htmlFor="name"
-                className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
-              >
-                Item name
-              </label>
-              <label
-                htmlFor="quantity"
-                className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
-              >
-                Qty.
-              </label>
-              <label
-                htmlFor="price"
-                className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
-              >
-                Price
-              </label>
-
-              <span
-                className={`text-[0.813rem] font-medium text-left text-gray-500 dark:text-color05`}
-              >
-                Total
-              </span>
-            </div>
-            {/* )} */}
-            {items.map((item, index) => (
-              <div
-                key={index}
-                className="grid grid-cols-itemGrid gap-y-4 gap-x-4 items-center mb-2 "
-              >
-                <input
-                  id="name"
-                  type="text"
-                  className={inputStyleWithError("items")}
-                  style={placeholderStyle}
-                  value={item.name}
-                  onChange={(e) => updateItem(index, "name", e.target.value)}
-                />
-                <input
-                  id="quantity"
-                  type="number"
-                  className={`${inputStyle}`}
-                  style={placeholderStyle}
-                  value={item.quantity}
-                  onChange={(e) =>
-                    updateItem(index, "quantity", Number(e.target.value))
-                  }
-                />
-                <input
-                  id="price"
-                  type="number"
-                  className={`${inputStyle}`}
-                  style={placeholderStyle}
-                  value={item.price.toFixed(2)}
-                  onChange={(e) =>
-                    updateItem(index, "price", Number(e.target.value))
-                  }
-                />
-                <span className="text-[0.938rem] font-bold text-color06 dark:text-color05">
-                  {(item.quantity * item.price).toFixed(2)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => removeItem(index)}
-                  className="justify-self-end"
-                >
-                  <DeleteIcon className=" text-color06 hover:text-color09 transition-colors duration-200" />
-                </button>
-              </div>
-            ))}
-            <Button
-              type="button"
-              variant="secondary"
-              size="large"
-              className={`w-full justify-center gap-x-1 mt-4`}
-              onClick={addItem}
+        <div
+          className={`h-full overflow-y-auto scrollbar-thin scrollbar-webkit
+          ${screenSize === "mobile" ? "px-6 pt-24" : ""}
+          ${screenSize === "tablet" ? "px-6 pt-28 pb-6" : ""}
+          ${screenSize === "desktop" ? "pl-9 pr-6 pt-12 pb-6" : ""}
+        `}
+        >
+          {/* Go back button - Only on mobile */}
+          {screenSize === "mobile" && (
+            <button
+              onClick={handleClose}
+              className="mb-6 text-sm font-bold text-color08 dark:text-white"
             >
-              <PlusIcon className=" text-color07 dark:text-color05 mt-[-3px]" />
-              <span>Add New Item</span>
-            </Button>
-          </div>
-
-          {/* Global errors */}
-          <div className="flex flex-col mt-8">
-            {errors.formData && (
-              <span className="text-[0.625rem] font-semibold text-color09">
-                {errors.formData}
-              </span>
-            )}
-            {errors.items && (
-              <span className="text-[0.625rem] font-semibold text-color09">
-                {errors.items}
-              </span>
-            )}
-          </div>
-
-          {/* Buttons */}
-          {mode === "edit" && (
-            <div className="w-full flex justify-end gap-2 mt-6">
-              <Button
-                type="button"
-                variant="cancel"
-                size="large"
-                // onClick={() => onClose()}
-                onClick={handleClose}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                data-action-type="send"
-                variant="primary"
-                size="large"
-                // onClick={handleSaveAndSend}
-                // onClick={(e) => handleSubmit(e as any, "send")}
-              >
-                Save Changes
-              </Button>
-            </div>
+              Go back
+            </button>
           )}
-          {mode === "create" && (
-            <div className="w-full flex justify-between mt-6">
-              <Button
-                type="button"
-                variant="discard"
-                size="large"
-                // onClick={() => onClose()}
-                onClick={handleClose}
-              >
-                Discard
-              </Button>
-              <div className="flex gap-x-2">
-                <Button
-                  type="submit"
-                  data-action-type="draft"
-                  variant="draft"
-                  size="large"
-                  // onClick={handleSaveAsDraft}
-                  // onClick={(e) => handleSubmit(e as any, "draft")}
-                >
-                  Save as Draft
-                </Button>
-                <Button
-                  type="submit"
-                  data-action-type="send"
-                  variant="primary"
-                  size="large"
-                  // onClick={handleSaveAndSend}
-                  // onClick={(e) => handleSubmit(e as any, "send")}
-                >
-                  Save & Send
-                </Button>
+
+          {/* Form Content */}
+          <h2 className="text-2xl font-bold mb-8">
+            {mode === "create" ? (
+              "New Invoice"
+            ) : (
+              <>
+                Edit <span className="text-color06">#</span>
+                {invoiceData?.id}
+              </>
+            )}
+          </h2>
+
+          {/* Formulaire */}
+          <form onSubmit={handleSubmit} data-action-type="send">
+            {/* Section "Bill From" */}
+            <div>
+              <h3 className={`${titleSectionStyle}`}>Bill From</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* street */}
+                <div className="col-span-3">
+                  <InputLabel
+                    label="Street Address"
+                    error={errors.senderAddressStreet}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("senderAddressStreet")}
+                    style={placeholderStyle}
+                    value={formData.senderAddress.street}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        senderAddress: {
+                          ...formData.senderAddress,
+                          street: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                {/* city */}
+                <div>
+                  <InputLabel label="City" error={errors.senderAddressCity} />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("senderAddressCity")}
+                    style={placeholderStyle}
+                    value={formData.senderAddress.city}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        senderAddress: {
+                          ...formData.senderAddress,
+                          city: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                {/* post code */}
+                <div>
+                  <InputLabel
+                    label="Post Code"
+                    error={errors.senderAddressPostCode}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("senderAddressPostCode")}
+                    style={placeholderStyle}
+                    value={formData.senderAddress.postCode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        senderAddress: {
+                          ...formData.senderAddress,
+                          postCode: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                {/* contry */}
+                <div>
+                  <InputLabel
+                    label="Country"
+                    error={errors.senderAddressCountry}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("senderAddressCountry")}
+                    style={placeholderStyle}
+                    value={formData.senderAddress.country}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        senderAddress: {
+                          ...formData.senderAddress,
+                          country: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
               </div>
             </div>
-          )}
-        </form>
+
+            {/* Section "Bill To" */}
+            <div className="mt-6">
+              <h3 className={`${titleSectionStyle}`}>Bill To</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* client's name */}
+                <div className="col-span-3">
+                  <InputLabel label="Client's Name" error={errors.clientName} />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("clientName")}
+                    style={placeholderStyle}
+                    value={formData.clientName}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        clientName: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+                {/* client's email */}
+                <div className="col-span-3">
+                  <InputLabel
+                    label="Client's Email"
+                    error={errors.clientEmail}
+                  />
+                  <input
+                    type="email"
+                    className={inputStyleWithError("clientEmail")}
+                    style={placeholderStyle}
+                    value={formData.clientEmail}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        clientEmail: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. email@example.com"
+                  />
+                </div>
+                {/* street adress */}
+                <div className="col-span-3">
+                  <InputLabel
+                    label="Street Adress"
+                    error={errors.clientAddressStreet}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("clientAddressStreet")}
+                    style={placeholderStyle}
+                    value={formData.clientAddress.street}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        clientAddress: {
+                          ...formData.clientAddress,
+                          street: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                {/* city */}
+                <div>
+                  <InputLabel label="City" error={errors.clientAddressCity} />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("clientAddressCity")}
+                    style={placeholderStyle}
+                    value={formData.clientAddress.city}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        clientAddress: {
+                          ...formData.clientAddress,
+                          city: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                {/* post code */}
+                <div>
+                  <InputLabel
+                    label="Post Code"
+                    error={errors.clientAddressPostCode}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("clientAddressPostCode")}
+                    style={placeholderStyle}
+                    value={formData.clientAddress.postCode}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        clientAddress: {
+                          ...formData.clientAddress,
+                          postCode: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+                {/* country */}
+                <div>
+                  <InputLabel
+                    label="Country"
+                    error={errors.clientAddressCountry}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("clientAddressCountry")}
+                    style={placeholderStyle}
+                    value={formData.clientAddress.country}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        clientAddress: {
+                          ...formData.clientAddress,
+                          country: e.target.value,
+                        },
+                      })
+                    }
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section "Invoice Details" */}
+            <div className="mt-12">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="col-span-2 grid grid-cols-2 gap-4">
+                  {/* Invoice date */}
+                  <div>
+                    <label
+                      className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                    >
+                      Invoice Date
+                    </label>
+                    <DatePicker
+                      initialDate={new Date(formData.createdAt)}
+                      onDateChange={handleDateChange}
+                    />
+                  </div>
+                  {/* Payement terms */}
+                  <div>
+                    <label
+                      className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                    >
+                      Payment Terms
+                    </label>
+                    <PaymentTerms
+                      selectedTerm={formData.paymentTerms}
+                      onOptionChange={handlePaymentTermsChange}
+                    />
+                  </div>
+                </div>
+                {/* Description */}
+                <div className="col-span-2">
+                  <InputLabel
+                    label="Project Description"
+                    error={errors.description}
+                  />
+                  <input
+                    type="text"
+                    className={inputStyleWithError("description")}
+                    style={placeholderStyle}
+                    value={formData.description}
+                    onChange={(e) =>
+                      setFormData({
+                        ...formData,
+                        description: e.target.value,
+                      })
+                    }
+                    placeholder="e.g. Graphic Design Service"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Section "Item List" */}
+            <div className="mt-6 text-white">
+              <h3 className="text-sm font-bold text-[#888EB0] mb-4">
+                Item List
+              </h3>
+              {/* {items.length > 0 && ( */}
+              <div className="grid grid-cols-itemGrid gap-y-0 gap-x-4 items-center mb-2 ">
+                <label
+                  htmlFor="name"
+                  className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                >
+                  Item name
+                </label>
+                <label
+                  htmlFor="quantity"
+                  className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                >
+                  Qty.
+                </label>
+                <label
+                  htmlFor="price"
+                  className={`text-[0.813rem] font-medium text-gray-500 dark:text-color05`}
+                >
+                  Price
+                </label>
+
+                <span
+                  className={`text-[0.813rem] font-medium text-left text-gray-500 dark:text-color05`}
+                >
+                  Total
+                </span>
+              </div>
+              {/* )} */}
+              {items.map((item, index) => (
+                <div
+                  key={index}
+                  className="grid grid-cols-itemGrid gap-y-4 gap-x-4 items-center mb-2 "
+                >
+                  <input
+                    id="name"
+                    type="text"
+                    className={inputStyleWithError("items")}
+                    style={placeholderStyle}
+                    value={item.name}
+                    onChange={(e) => updateItem(index, "name", e.target.value)}
+                  />
+                  <input
+                    id="quantity"
+                    type="number"
+                    className={`${inputStyle}`}
+                    style={placeholderStyle}
+                    value={item.quantity}
+                    onChange={(e) =>
+                      updateItem(index, "quantity", Number(e.target.value))
+                    }
+                  />
+                  <input
+                    id="price"
+                    type="number"
+                    className={`${inputStyle}`}
+                    style={placeholderStyle}
+                    value={item.price.toFixed(2)}
+                    onChange={(e) =>
+                      updateItem(index, "price", Number(e.target.value))
+                    }
+                  />
+                  <span className="text-[0.938rem] font-bold text-color06 dark:text-color05">
+                    {(item.quantity * item.price).toFixed(2)}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeItem(index)}
+                    className="justify-self-end"
+                  >
+                    <DeleteIcon className=" text-color06 hover:text-color09 transition-colors duration-200" />
+                  </button>
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="secondary"
+                size="large"
+                className={`w-full justify-center gap-x-1 mt-4`}
+                onClick={addItem}
+              >
+                <PlusIcon className=" text-color07 dark:text-color05 mt-[-3px]" />
+                <span>Add New Item</span>
+              </Button>
+            </div>
+
+            {/* Global errors */}
+            <div className="flex flex-col mt-8">
+              {errors.formData && (
+                <span className="text-[0.625rem] font-semibold text-color09">
+                  {errors.formData}
+                </span>
+              )}
+              {errors.items && (
+                <span className="text-[0.625rem] font-semibold text-color09">
+                  {errors.items}
+                </span>
+              )}
+            </div>
+
+            {/* Buttons */}
+            {mode === "edit" && (
+              <div className="w-full flex justify-end gap-2 mt-6">
+                <Button
+                  type="button"
+                  variant="cancel"
+                  size="large"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" data-action-type="send" variant="primary">
+                  Save Changes
+                </Button>
+              </div>
+            )}
+            {mode === "create" && (
+              <div className="w-full flex justify-between mt-6">
+                <Button
+                  type="button"
+                  variant="discard"
+                  size="large"
+                  onClick={handleClose}
+                >
+                  Discard
+                </Button>
+                <div className="flex gap-x-2">
+                  <Button
+                    type="submit"
+                    data-action-type="draft"
+                    variant="draft"
+                  >
+                    Save as Draft
+                  </Button>
+                  <Button
+                    type="submit"
+                    data-action-type="send"
+                    variant="primary"
+                  >
+                    Save & Send
+                  </Button>
+                </div>
+              </div>
+            )}
+          </form>
+        </div>
       </div>
     </div>
   );
