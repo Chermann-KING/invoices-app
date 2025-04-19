@@ -375,9 +375,9 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
             {/* Section "Bill From" */}
             <div>
               <h3 className={`${titleSectionStyle}`}>Bill From</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-6">
                 {/* street */}
-                <div className="col-span-3">
+                <div>
                   <InputLabel
                     label="Street Address"
                     error={errors.senderAddressStreet}
@@ -398,78 +398,169 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                     }
                   />
                 </div>
-                {/* city */}
-                <div>
-                  <InputLabel label="City" error={errors.senderAddressCity} />
-                  <input
-                    type="text"
-                    className={inputStyleWithError("senderAddressCity")}
-                    style={placeholderStyle}
-                    value={formData.senderAddress.city}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        senderAddress: {
-                          ...formData.senderAddress,
-                          city: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {/* post code */}
-                <div>
-                  <InputLabel
-                    label="Post Code"
-                    error={errors.senderAddressPostCode}
-                  />
-                  <input
-                    type="text"
-                    className={inputStyleWithError("senderAddressPostCode")}
-                    style={placeholderStyle}
-                    value={formData.senderAddress.postCode}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        senderAddress: {
-                          ...formData.senderAddress,
-                          postCode: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {/* contry */}
-                <div>
-                  <InputLabel
-                    label="Country"
-                    error={errors.senderAddressCountry}
-                  />
-                  <input
-                    type="text"
-                    className={inputStyleWithError("senderAddressCountry")}
-                    style={placeholderStyle}
-                    value={formData.senderAddress.country}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        senderAddress: {
-                          ...formData.senderAddress,
-                          country: e.target.value,
-                        },
-                      })
-                    }
-                  />
+                {/* city, post code, country */}
+                <div
+                  className={`
+                  ${
+                    screenSize === "mobile"
+                      ? "flex flex-col gap-6"
+                      : "grid grid-cols-3 gap-6"
+                  }
+                `}
+                >
+                  {screenSize === "mobile" ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <InputLabel
+                            label="City"
+                            error={errors.senderAddressCity}
+                          />
+                          <input
+                            type="text"
+                            className={inputStyleWithError("senderAddressCity")}
+                            style={placeholderStyle}
+                            value={formData.senderAddress.city}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                senderAddress: {
+                                  ...formData.senderAddress,
+                                  city: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <InputLabel
+                            label="Post Code"
+                            error={errors.senderAddressPostCode}
+                          />
+                          <input
+                            type="text"
+                            className={inputStyleWithError(
+                              "senderAddressPostCode"
+                            )}
+                            style={placeholderStyle}
+                            value={formData.senderAddress.postCode}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                senderAddress: {
+                                  ...formData.senderAddress,
+                                  postCode: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <InputLabel
+                          label="Country"
+                          error={errors.senderAddressCountry}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError(
+                            "senderAddressCountry"
+                          )}
+                          style={placeholderStyle}
+                          value={formData.senderAddress.country}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              senderAddress: {
+                                ...formData.senderAddress,
+                                country: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <InputLabel
+                          label="City"
+                          error={errors.senderAddressCity}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError("senderAddressCity")}
+                          style={placeholderStyle}
+                          value={formData.senderAddress.city}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              senderAddress: {
+                                ...formData.senderAddress,
+                                city: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <InputLabel
+                          label="Post Code"
+                          error={errors.senderAddressPostCode}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError(
+                            "senderAddressPostCode"
+                          )}
+                          style={placeholderStyle}
+                          value={formData.senderAddress.postCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              senderAddress: {
+                                ...formData.senderAddress,
+                                postCode: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <InputLabel
+                          label="Country"
+                          error={errors.senderAddressCountry}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError(
+                            "senderAddressCountry"
+                          )}
+                          style={placeholderStyle}
+                          value={formData.senderAddress.country}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              senderAddress: {
+                                ...formData.senderAddress,
+                                country: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
 
             {/* Section "Bill To" */}
-            <div className="mt-6">
+            <div className="mt-12">
               <h3 className={`${titleSectionStyle}`}>Bill To</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex flex-col gap-6">
                 {/* client's name */}
-                <div className="col-span-3">
+                <div>
                   <InputLabel label="Client's Name" error={errors.clientName} />
                   <input
                     type="text"
@@ -485,7 +576,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                   />
                 </div>
                 {/* client's email */}
-                <div className="col-span-3">
+                <div>
                   <InputLabel
                     label="Client's Email"
                     error={errors.clientEmail}
@@ -504,10 +595,10 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                     placeholder="e.g. email@example.com"
                   />
                 </div>
-                {/* street adress */}
-                <div className="col-span-3">
+                {/* street address */}
+                <div>
                   <InputLabel
-                    label="Street Adress"
+                    label="Street Address"
                     error={errors.clientAddressStreet}
                   />
                   <input
@@ -526,68 +617,159 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
                     }
                   />
                 </div>
-                {/* city */}
-                <div>
-                  <InputLabel label="City" error={errors.clientAddressCity} />
-                  <input
-                    type="text"
-                    className={inputStyleWithError("clientAddressCity")}
-                    style={placeholderStyle}
-                    value={formData.clientAddress.city}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        clientAddress: {
-                          ...formData.clientAddress,
-                          city: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {/* post code */}
-                <div>
-                  <InputLabel
-                    label="Post Code"
-                    error={errors.clientAddressPostCode}
-                  />
-                  <input
-                    type="text"
-                    className={inputStyleWithError("clientAddressPostCode")}
-                    style={placeholderStyle}
-                    value={formData.clientAddress.postCode}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        clientAddress: {
-                          ...formData.clientAddress,
-                          postCode: e.target.value,
-                        },
-                      })
-                    }
-                  />
-                </div>
-                {/* country */}
-                <div>
-                  <InputLabel
-                    label="Country"
-                    error={errors.clientAddressCountry}
-                  />
-                  <input
-                    type="text"
-                    className={inputStyleWithError("clientAddressCountry")}
-                    style={placeholderStyle}
-                    value={formData.clientAddress.country}
-                    onChange={(e) =>
-                      setFormData({
-                        ...formData,
-                        clientAddress: {
-                          ...formData.clientAddress,
-                          country: e.target.value,
-                        },
-                      })
-                    }
-                  />
+                {/* city, post code, country */}
+                <div
+                  className={`
+                  ${
+                    screenSize === "mobile"
+                      ? "flex flex-col gap-6"
+                      : "grid grid-cols-3 gap-6"
+                  }
+                `}
+                >
+                  {screenSize === "mobile" ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-6">
+                        <div>
+                          <InputLabel
+                            label="City"
+                            error={errors.clientAddressCity}
+                          />
+                          <input
+                            type="text"
+                            className={inputStyleWithError("clientAddressCity")}
+                            style={placeholderStyle}
+                            value={formData.clientAddress.city}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                clientAddress: {
+                                  ...formData.clientAddress,
+                                  city: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                        <div>
+                          <InputLabel
+                            label="Post Code"
+                            error={errors.clientAddressPostCode}
+                          />
+                          <input
+                            type="text"
+                            className={inputStyleWithError(
+                              "clientAddressPostCode"
+                            )}
+                            style={placeholderStyle}
+                            value={formData.clientAddress.postCode}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                clientAddress: {
+                                  ...formData.clientAddress,
+                                  postCode: e.target.value,
+                                },
+                              })
+                            }
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <InputLabel
+                          label="Country"
+                          error={errors.clientAddressCountry}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError(
+                            "clientAddressCountry"
+                          )}
+                          style={placeholderStyle}
+                          value={formData.clientAddress.country}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              clientAddress: {
+                                ...formData.clientAddress,
+                                country: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <InputLabel
+                          label="City"
+                          error={errors.clientAddressCity}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError("clientAddressCity")}
+                          style={placeholderStyle}
+                          value={formData.clientAddress.city}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              clientAddress: {
+                                ...formData.clientAddress,
+                                city: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <InputLabel
+                          label="Post Code"
+                          error={errors.clientAddressPostCode}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError(
+                            "clientAddressPostCode"
+                          )}
+                          style={placeholderStyle}
+                          value={formData.clientAddress.postCode}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              clientAddress: {
+                                ...formData.clientAddress,
+                                postCode: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <InputLabel
+                          label="Country"
+                          error={errors.clientAddressCountry}
+                        />
+                        <input
+                          type="text"
+                          className={inputStyleWithError(
+                            "clientAddressCountry"
+                          )}
+                          style={placeholderStyle}
+                          value={formData.clientAddress.country}
+                          onChange={(e) =>
+                            setFormData({
+                              ...formData,
+                              clientAddress: {
+                                ...formData.clientAddress,
+                                country: e.target.value,
+                              },
+                            })
+                          }
+                        />
+                      </div>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -735,7 +917,7 @@ const InvoicePanel: React.FC<InvoicePanelProps> = ({
             </div>
 
             {/* Global errors */}
-            <div className="flex flex-col mt-8">
+            <div className="flex flex-col my-8">
               {errors.formData && (
                 <span className="text-[0.625rem] font-semibold text-color09">
                   {errors.formData}
